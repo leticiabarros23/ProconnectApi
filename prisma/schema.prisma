@@ -21,3 +21,10 @@ model paciente{
   senha                   String
 }
 
+model agendamento{
+  id                      String      @id @unique
+  data                    DateTime
+  hora                    DateTime
+  descricao               String
+
+}
