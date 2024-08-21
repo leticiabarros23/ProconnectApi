@@ -1,7 +1,7 @@
 import { prisma } from "../../../lib/prisma";
 
-class CreatePacienteController{
-	async createPacienteModel(
+class CreateAgendamentoController{
+	async createAgendamentoModel(
 		nomePaciente:string,
 		dataNascimento:string,
 		genero:string,
@@ -26,4 +26,4 @@ class CreatePacienteController{
 }
 
 
-export default new CreatePacienteController() 
+export default new CreateAgendamentoController() 

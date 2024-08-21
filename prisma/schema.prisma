@@ -28,6 +28,19 @@ model locais{
   telefone                Int
 }
 
+model procedimentos {
+  id                      String       @id @unique
+  nome                    String
+  descricao               String
+  duracao                 String
+}
+
+model profissionais {
+id                        String       @id @unique
+nome                      String
+especialidade             String
+}
+
 model agendamento{
   id                      String      @id @unique
   data                    DateTime

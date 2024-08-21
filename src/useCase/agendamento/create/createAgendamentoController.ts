@@ -1,15 +1,15 @@
 import { Request,Response } from "express"
 import Validator from "../../../services/Validator"
-import CreatePacienteModel from "./CreatePacienteModel"
+import CreateAgendamentoModel from "./createAgendamentoModel"
 
-class CreatePacienteController{
-	async createPaciente(req:Request,res:Response){
+class CreateAgendamentoController{
+	async createAgendamento(req:Request,res:Response){
 		
 		const { nome,dataNascimento,genero,telefone,email,senha } = req.body
 
 		try{
-			const paciente = await CreatePacienteModel.createPacienteModel(nome,dataNascimento,genero,telefone,email,senha)
-			return res.json(paciente)
+			const agendamento = await CreateAgendamentoModel.createAgendamentoModel(nome,dataNascimento,genero,telefone,email,senha)
+			return res.json(agendamento)
 
 		} catch(e){
 			console.log(e)
@@ -22,4 +22,4 @@ class CreatePacienteController{
 }
 
 
-export default new CreatePacienteController()
+export default new CreateAgendamentoController()
