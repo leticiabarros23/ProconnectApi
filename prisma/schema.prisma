@@ -21,6 +21,13 @@ model paciente{
   senha                   String
 }
 
+model locais{
+  id                      String      @id @unique
+  nome                    String
+  endereco                String
+  telefone                Int
+}
+
 model agendamento{
   id                      String      @id @unique
   data                    DateTime
