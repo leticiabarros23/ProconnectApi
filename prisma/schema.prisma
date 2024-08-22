@@ -8,14 +8,14 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model paciente {
-  id             String @id @unique
-  nome           String
-  dataNascimento String
-  email          String
-  genero         String
-  senha          String
-  telefone       Int
+model paciente{ 
+  id                      Int      @id @unique @default(autoincrement())
+  nome                    String  
+  dataNascimento          String
+  genero                  String
+  telefone                Int
+  email                   String
+  senha                   String
 }
 
 model locais {
@@ -25,22 +25,35 @@ model locais {
   telefone Int
 }
 
-model procedimentos {
-  id        String @id @unique
-  nome      String
-  descricao String
-  duracao   String
+model procedimentos{
+  id                      String       @id @unique
+  nome                    String
+  descricao               String
+  duracao                 String
 }
 
-model profissionais {
-  id            String @id @unique
-  nome          String
-  especialidade String
+model profissionais{
+id                        String       @id @unique
+nome                      String
+especialidade             String
 }
 
-model agendamento {
-  id        String   @id @unique
-  data      DateTime
-  hora      DateTime
-  descricao String
+model locais_procedimentos{
+  id                      String       @id @unique
+  locais_id               String
+  procediemntos_id        String
+}
+
+model profissionais_procedimentos{
+  id                      String      @id @unique
+  profissionais_id        String
+  procedimentos_id        String
+
+}
+model agendamento{
+  id                      String      @id @unique
+  data                    DateTime
+  hora                    DateTime
+  descricao               String
+
 }
