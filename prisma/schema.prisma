@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,40 +8,39 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model paciente{ 
-  id                      String      @id @unique 
-  nome                    String  
-  dataNascimento          String
-  genero                  String
-  telefone                Int
-  email                   String
-  senha                   String
+model paciente {
+  id             String @id @unique
+  nome           String
+  dataNascimento String
+  email          String
+  genero         String
+  senha          String
+  telefone       Int
 }
 
-model locais{
-  id                      String      @id @unique
-  nome                    String
-  endereco                String
-  telefone                Int
+model locais {
+  id       String @id @unique
+  nome     String
+  endereco String
+  telefone Int
 }
 
 model procedimentos {
-  id                      String       @id @unique
-  nome                    String
-  descricao               String
-  duracao                 String
+  id        String @id @unique
+  nome      String
+  descricao String
+  duracao   String
 }
 
 model profissionais {
-id                        String       @id @unique
-nome                      String
-especialidade             String
+  id            String @id @unique
+  nome          String
+  especialidade String
 }
 
-model agendamento{
-  id                      String      @id @unique
-  data                    DateTime
-  hora                    DateTime
-  descricao               String
-
+model agendamento {
+  id        String   @id @unique
+  data      DateTime
+  hora      DateTime
+  descricao String
 }
