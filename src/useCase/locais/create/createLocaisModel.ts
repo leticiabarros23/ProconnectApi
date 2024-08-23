@@ -9,9 +9,8 @@ class CreateLocaisController{
 			
 		const locais = await prisma.locais.create({
 			data:{
-				id:'12355545s6',
 				nome:nomeLocais,
-				enderecoo:endereco,
+				endereco:endereco,
 				telefone:telefone
 			}
 		})

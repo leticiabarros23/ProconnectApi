@@ -8,7 +8,6 @@ class CreateProfissionaisController{
 			
 		const profissionais = await prisma.profissionais.create({
 			data:{
-				id:'12355545s6',
 				nome:nomeProfissionais,
 				especialidade:especialidade
 			}

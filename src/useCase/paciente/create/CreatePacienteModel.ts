@@ -12,7 +12,6 @@ class CreatePacienteController{
 			
 		const paciente = await prisma.paciente.create({
 			data:{
-				id:'12355545s6',
 				nome:nomePaciente,
 				dataNascimento:dataNascimento,
 				genero:genero,

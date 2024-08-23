@@ -9,7 +9,7 @@ datasource db {
 }
 
 model paciente{ 
-  id                      Int      @id @unique @default(autoincrement())
+  id                      Int      @id @default(autoincrement())
   nome                    String  
   dataNascimento          String
   genero                  String
@@ -19,39 +19,33 @@ model paciente{
 }
 
 model locais {
-  id       String @id @unique
-  nome     String
-  endereco String
-  telefone Int
+  id                      Int      @id @default(autoincrement())
+  nome                    String
+  endereco                String
+  telefone                Int
+  procedimentos procedimentos[]
+  profissionais profissionais[]
 }
 
 model procedimentos{
-  id                      String       @id @unique
+  id                      Int      @id @default(autoincrement())
   nome                    String
   descricao               String
   duracao                 String
+  locais locais[]
+  profissionais profissionais[]
 }
 
 model profissionais{
-id                        String       @id @unique
+  id                      Int      @id @default(autoincrement())
 nome                      String
 especialidade             String
+procedimentos procedimentos[]
+locais locais[]
 }
 
-model locais_procedimentos{
-  id                      String       @id @unique
-  locais_id               String
-  procediemntos_id        String
-}
-
-model profissionais_procedimentos{
-  id                      String      @id @unique
-  profissionais_id        String
-  procedimentos_id        String
-
-}
 model agendamento{
-  id                      String      @id @unique
+  id                      Int      @id @default(autoincrement())
   data                    DateTime
   hora                    DateTime
   descricao               String
