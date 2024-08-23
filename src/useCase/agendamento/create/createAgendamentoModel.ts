@@ -12,7 +12,6 @@ class CreateAgendamentoController{
 			
 		const paciente = await prisma.agendamento.create({
 			data:{
-				id:'12355545s6',
 				nome:nomePaciente,
 				dataNascimento:dataNascimento,
 				genero:genero,

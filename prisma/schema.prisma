@@ -37,11 +37,12 @@ model procedimentos{
 }
 
 model profissionais{
-  id                      Int      @id @default(autoincrement())
+id                        Int      @id @default(autoincrement())
 nome                      String
 especialidade             String
 procedimentos procedimentos[]
 locais locais[]
+disponibilidades disponibilidades[]
 }
 
 model agendamento{
@@ -49,5 +50,12 @@ model agendamento{
   data                    DateTime
   hora                    DateTime
   descricao               String
+}
 
+model disponibilidades {
+  id                      Int      @id @default(autoincrement())
+  data                    DateTime
+  hora_inicio             DateTime
+  hora_fim                DateTime
+  profissionais profissionais[]
 }
