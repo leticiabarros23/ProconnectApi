@@ -4,14 +4,26 @@ class CreateLocaisController{
 	async createLocaisModel(
 		nomeLocais:string,
 		endereco:string,
-		telefone:number
+		telefone:number,
+		procedimentosId: number,
+		profissionaisId: number
 	){
 			
 		const locais = await prisma.locais.create({
 			data:{
 				nome:nomeLocais,
 				endereco:endereco,
-				telefone:telefone
+				telefone:telefone,
+				procedimentos: {
+					connect: {
+						id: procedimentosId,
+					},
+				},
+				profissionais:  {
+					connect: {
+						id: procedimentosId,
+					},
+				},
 			}
 		})
 		return locais
