@@ -5,10 +5,10 @@ import CreateAgendamentoModel from "./createAgendamentoModel"
 class CreateAgendamentoController{
 	async createAgendamento(req:Request,res:Response){
 		
-		const { nome,dataNascimento,genero,telefone,email,senha } = req.body
+		const {data,hora,descricao,locaisId,profissionaisId,disponibilidadesId,procedimentosId,pacienteId } = req.body
 
 		try{
-			const agendamento = await CreateAgendamentoModel.createAgendamentoModel(nome,dataNascimento,genero,telefone,email,senha)
+			const agendamento = await CreateAgendamentoModel.createAgendamentoModel (data,hora,descricao,locaisId,profissionaisId,disponibilidadesId,procedimentosId,pacienteId)
 			return res.json(agendamento)
 
 		} catch(e){

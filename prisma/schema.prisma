@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 model paciente{ 
@@ -16,6 +15,8 @@ model paciente{
   telefone                Int
   email                   String
   senha                   String
+  agendamento agendamento[]
+
 }
 
 model locais {
@@ -25,6 +26,7 @@ model locais {
   telefone                Int
   procedimentos procedimentos[]
   profissionais profissionais[]
+  agendamento agendamento[]
 }
 
 model procedimentos{
@@ -34,6 +36,7 @@ model procedimentos{
   duracao                 String
   locais locais[]
   profissionais profissionais[]
+  agendamento agendamento[]
 }
 
 model profissionais{
@@ -43,6 +46,7 @@ especialidade             String
 procedimentos procedimentos[]
 locais locais[]
 disponibilidades disponibilidades[]
+agendamento agendamento[]
 }
 
 model agendamento{
@@ -50,6 +54,11 @@ model agendamento{
   data                    DateTime
   hora                    DateTime
   descricao               String
+  locais locais[] 
+  profissionais profissionais[] 
+  disponibilidades disponibilidades[] 
+  procedimentos procedimentos[] 
+  paciente paciente[]
 }
 
 model disponibilidades {
@@ -58,4 +67,6 @@ model disponibilidades {
   hora_inicio             DateTime
   hora_fim                DateTime
   profissionais profissionais[]
+  agendamento agendamento[]
+
 }

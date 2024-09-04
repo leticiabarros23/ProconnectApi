@@ -5,10 +5,10 @@ import CreateLocaisModel from "./createLocaisModel"
 class CreateLocaisController{
 	async createLocais(req:Request,res:Response){
 		
-		const { nome,endereco,telefone,procedimentosId, profissionaisId  } = req.body
+		const { nome,endereco,telefone,procedimentosId, profissionaisId, agendamentoId } = req.body
 
 		try{
-			const locais = await CreateLocaisModel.createLocaisModel(nome,endereco,telefone,procedimentosId, profissionaisId)
+			const locais = await CreateLocaisModel.createLocaisModel(nome,endereco,telefone,procedimentosId, profissionaisId, agendamentoId)
 			return res.json(locais)
 
 		} catch(e){

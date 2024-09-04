@@ -5,10 +5,10 @@ import CreateProcedimentosModel from "./createProcedimentosModel"
 class CreateProcedimentosController{
 	async createProcedimentos(req:Request,res:Response){
 		
-		const { nome,descricao,duracao } = req.body
+		const { nome,descricao,duracao,profissionaisId, locaisId, agendamentoId } = req.body
 
 		try{
-			const procedimentos = await CreateProcedimentosModel.createProcedimentosModel(nome,descricao,duracao)
+			const procedimentos = await CreateProcedimentosModel.createProcedimentosModel(nome,descricao,duracao, profissionaisId, locaisId, agendamentoId)
 			return res.json(procedimentos)
 
 		} catch(e){

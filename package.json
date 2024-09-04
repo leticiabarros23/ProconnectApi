@@ -11,9 +11,9 @@
   "keywords": [],
   "author": "Samuel Oliveira de Moura",
   "license": "ISC",
-  "prisma": {
-    "schema": "./prisma/schema.prisma"
-  },
+ "prisma": {
+  "schema": "../dentista/prisma/schema.prisma"
+},
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
     "@types/bcryptjs": "^2.4.4",

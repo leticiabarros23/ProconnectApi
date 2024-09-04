@@ -2,25 +2,47 @@ import { prisma } from "../../../lib/prisma";
 
 class CreateAgendamentoController{
 	async createAgendamentoModel(
-		nomePaciente:string,
-		dataNascimento:string,
-		genero:string,
-		telefone:number,
-		email:string,
-		senha:string
+		Data: Date,
+		Hora: Date,
+		Descricao: string,
+		locaisId: number,
+		profissionaisId: number,
+		disponibilidadesId: number,
+		procedimentosId: number,
+		pacienteId: number
 	){
 			
-		const paciente = await prisma.agendamento.create({
+		const agendamento = await prisma.agendamento.create({
 			data:{
-				nome:nomePaciente,
-				dataNascimento:dataNascimento,
-				genero:genero,
-				telefone:telefone,
-				email:email,
-				senha:senha
+			data:  Data,
+			hora: Hora,
+			descricao: Descricao,
+			locais: {
+				connect: { id: Number(locaisId) },
+			  },
+			profissionais:  {
+				connect: {
+					id: profissionaisId,
+				},
+			},
+			disponibilidades: {
+				connect: {
+					id: disponibilidadesId,
+				},
+			},
+			procedimentos: {
+				connect: {
+					id: procedimentosId,
+				},
+			},
+			paciente:  {
+				connect: {
+					id: pacienteId,
+				},
+			},
 			}
 		})
-		return paciente
+		return agendamento
 	}
 }
 

@@ -5,17 +5,27 @@ class CreateDisponibilidadesController{
         data: string,          
         hora_inicio: string,     
         hora_fim: string,        
-        profissionalId: number
+        profissionaisId: number,
+        agendamentoId: number
 	){
 			
 		const disponibilidades = await prisma.disponibilidades.create({
-			data:{
+		data:{
                 data: new Date(data),
                 hora_inicio: new Date(hora_inicio),
                 hora_fim: new Date(hora_fim),
-                profissionalId: profissionalId
-			}
-		})
+                profissionais:  {
+                        connect: {
+                                id: profissionaisId,
+                        },
+                },
+                // agendamento:  {
+                //         connect: {
+                //                 id: agendamentoId,
+                //         },
+                // },
+        }
+})
 		return disponibilidades
 	}
 }

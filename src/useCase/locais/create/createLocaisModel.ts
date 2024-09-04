@@ -6,7 +6,8 @@ class CreateLocaisController{
 		endereco:string,
 		telefone:number,
 		procedimentosId: number,
-		profissionaisId: number
+		profissionaisId: number,
+		agendamentoId: number
 	){
 			
 		const locais = await prisma.locais.create({
@@ -21,7 +22,12 @@ class CreateLocaisController{
 				},
 				profissionais:  {
 					connect: {
-						id: procedimentosId,
+						id: profissionaisId,
+					},
+				},
+				agendamento:  {
+					connect: {
+						id: agendamentoId,
 					},
 				},
 			}

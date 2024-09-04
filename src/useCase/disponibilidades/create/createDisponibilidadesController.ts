@@ -1,14 +1,14 @@
 import { Request,Response } from "express"
 import Validator from "../../../services/Validator"
-import CreateAgendamentoModel from "./createDisponibilidadesModel"
+import CreateDisponibilidadesModel from "./createDisponibilidadesModel"
 
 class CreateDisponibilidadesController{
 	async createDisponibilidades(req:Request,res:Response){
 		
-		const { data, hora_inicio, hora_fim, profissionalId } = req.body
+		const { data, hora_inicio, hora_fim, profissionaisId, agendamentoId } = req.body
 
 		try{
-			const disponibilidades = await CreateDisponibilidadesModel.createDisponibilidadesModel(data, hora_inicio, hora_fim, profissionalId)
+			const disponibilidades = await CreateDisponibilidadesModel.createDisponibilidadesModel(data, hora_inicio, hora_fim, profissionaisId, agendamentoId)
 			return res.json(disponibilidades)
 
 		} catch(e){

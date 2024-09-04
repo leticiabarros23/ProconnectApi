@@ -7,7 +7,8 @@ class CreatePacienteController{
 		genero:string,
 		telefone:number,
 		email:string,
-		senha:string
+		senha:string,
+		agendamentoId: number
 	){
 			
 		const paciente = await prisma.paciente.create({
@@ -17,9 +18,15 @@ class CreatePacienteController{
 				genero:genero,
 				telefone:telefone,
 				email:email,
-				senha:senha
+				senha:senha,
+				agendamento: {
+					connect: {
+						id: agendamentoId,
+					},
+				},
+			
 			}
-		})
+		}) 
 		return paciente
 	}
 }
