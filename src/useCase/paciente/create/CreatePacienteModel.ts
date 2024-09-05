@@ -1,6 +1,6 @@
 import { prisma } from "../../../lib/prisma";
 
-class CreatePacienteController{
+class CreatePacienteController{ // recebe os dados do model
 	async createPacienteModel(
 		nomePaciente:string,
 		dataNascimento:string,
@@ -11,12 +11,12 @@ class CreatePacienteController{
 		agendamentoId: number
 	){
 			
-		const paciente = await prisma.paciente.create({
+		const paciente = await prisma.paciente.create({ // abre o banco de dados
 			data:{
 				nome:nomePaciente,
 				dataNascimento:dataNascimento,
 				genero:genero,
-				telefone:telefone,
+				telefone:telefone, // guarda as informações
 				email:email,
 				senha:senha,
 				agendamento: {
@@ -27,7 +27,7 @@ class CreatePacienteController{
 			
 			}
 		}) 
-		return paciente
+		return paciente // fecha o banco de dados/ gaveta
 	}
 }
 

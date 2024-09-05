@@ -1,25 +1,25 @@
 import { prisma } from "../../../lib/prisma";
 
-class CreateAgendamentoController{
-	async createAgendamentoModel(
-		Data: Date,
-		Hora: Date,
-		Descricao: string,
-		locaisId: number,
-		profissionaisId: number,
-		disponibilidadesId: number,
-		procedimentosId: number,
-		pacienteId: number
+class CreateAgendamentoController{ 
+	async createAgendamentoModel( //recebe os dados do controller
+		Data: Date, //recebeu a data 
+		Hora: Date, //recebeu a hora
+		Descricao: string, //recebeu a descrição
+		locaisId: number, //recebeu o id do local
+		profissionaisId: number, // recebeu o id do profissional
+		disponibilidadesId: number, // recebeu o id da disponibilidades
+		procedimentosId: number, // recebeu o id da procedimento
+		pacienteId: number // recebeu o id do paciente
 	){
 			
-		const agendamento = await prisma.agendamento.create({
+		const agendamento = await prisma.agendamento.create({ // abre a gaveta - banco de dados
 			data:{
 			data:  Data,
 			hora: Hora,
 			descricao: Descricao,
-			locais: {
-				connect: { id: Number(locaisId) },
-			  },
+			locais:{
+				
+			},
 			profissionais:  {
 				connect: {
 					id: profissionaisId,
@@ -27,7 +27,7 @@ class CreateAgendamentoController{
 			},
 			disponibilidades: {
 				connect: {
-					id: disponibilidadesId,
+					id: disponibilidadesId, // guarda as informações
 				},
 			},
 			procedimentos: {
@@ -42,7 +42,7 @@ class CreateAgendamentoController{
 			},
 			}
 		})
-		return agendamento
+		return agendamento // fecha a gaveta
 	}
 }
 

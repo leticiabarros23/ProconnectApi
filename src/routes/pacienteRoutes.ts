@@ -4,6 +4,7 @@ import CreatePacienteController from "../useCase/paciente/create/CreatePacienteC
 const pacienteRoutes = express.Router();
 
 
-pacienteRoutes.post("/paciente",CreatePacienteController.createPaciente)
+pacienteRoutes.post("/paciente",CreatePacienteController.createPaciente) // determina o caminho do paciente e chama o controller
 
-export default pacienteRoutes;
+
+export default pacienteRoutes;3
