@@ -9,7 +9,7 @@
     "dev": "tsx watch src/server.ts"
   },
   "keywords": [],
-  "author": "Samuel Oliveira de Moura",
+  "author": "Leticia Barros e Talita Viana",
   "license": "ISC",
   "prisma": {
     "schema": "../dentista/prisma/schema.prisma"
