@@ -12,7 +12,7 @@
   "author": "Leticia Barros e Talita Viana",
   "license": "ISC",
   "prisma": {
-    "schema": "../dentista/prisma/schema.prisma"
+    "schema": "./prisma/schema.prisma"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
