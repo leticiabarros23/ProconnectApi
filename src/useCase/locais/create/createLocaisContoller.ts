@@ -1,5 +1,4 @@
 import { Request,Response } from "express"
-import Validator from "../../../services/Validator"
 import CreateLocaisModel from "./createLocaisModel"
 
 class CreateLocaisController{

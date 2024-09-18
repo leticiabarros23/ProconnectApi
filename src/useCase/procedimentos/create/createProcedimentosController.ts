@@ -1,5 +1,4 @@
 import { Request,Response } from "express"
-import Validator from "../../../services/Validator"
 import CreateProcedimentosModel from "./createProcedimentosModel"
 
 class CreateProcedimentosController{
