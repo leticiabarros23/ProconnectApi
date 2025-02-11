@@ -9,7 +9,7 @@
     "dev": "tsx watch src/server.ts"
   },
   "keywords": [],
-  "author": "Leticia Barros e Talita Viana",
+  "author": "Leticia Barros",
   "license": "ISC",
   "prisma": {
     "schema": "./prisma/schema.prisma"

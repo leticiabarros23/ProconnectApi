@@ -1,13 +1,11 @@
 import express,{Request,Response,NextFunction} from 'express'
 import dotenv from "dotenv";
 import cors from 'cors';
-
-
-import pacienteRoutes from './routes/pacienteRoutes';
+import profissionalRoutes from './routes/profissionalRoutes';
+import servicoRoutes from "./routes/servicoRoutes";
+import localizacaoRoutes from './routes/localizacaoRoutes';
 
 dotenv.config();
-
-
 
 
 const app = express()
@@ -21,8 +19,9 @@ app.options('*', cors());
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
-
-app.use(pacienteRoutes)
+app.use(localizacaoRoutes)
+app.use(servicoRoutes)
+app.use(profissionalRoutes)
 
 app.get('/',(req,res)=>{
   res.status(200).send('<h1>Está Online</h1>')

@@ -3,70 +3,40 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider  = "postgresql" // Define qual o banco de dados estamos usando
+  url       = env("DATABASE_URL") // fazer conexão com o banco de dados
+  directUrl = env("DIRECT_URL") 
 }
 
-model paciente{ 
-  id                      Int      @id @default(autoincrement())
-  nome                    String  
-  dataNascimento          String
-  genero                  String
-  telefone                Int
-  email                   String
-  senha                   String
-  agendamento agendamento[]
 
+model Profissional {
+  id        Int      @id @default(autoincrement()) // Chave primária
+  nome      String
+  email     String   @unique                      // Email único
+  telefone  String
+  linkedin  String?
+  instagram String?
+  servicos  Servico[] // Relacionamento 1:N com Serviços
+  criadoEm  DateTime @default(now())
 }
 
-model locais {
-  id                      Int      @id @default(autoincrement())
-  nome                    String
-  endereco                String
-  telefone                Int
-  procedimentos procedimentos[]
-  profissionais profissionais[]
-  agendamento agendamento[]
+// Tabela Localização
+model Localizacao {
+  id        Int      @id @default(autoincrement()) // Chave primária
+  numero    String
+  bairro    String
+  cidade    String
+  criadoEm  DateTime @default(now())
 }
 
-model procedimentos{
-  id                      Int      @id @default(autoincrement())
-  nome                    String
-  descricao               String
-  duracao                 String
-  locais locais[]
-  profissionais profissionais[]
-  agendamento agendamento[]
-}
-
-model profissionais{
-id                        Int      @id @default(autoincrement())
-nome                      String
-especialidade             String
-procedimentos procedimentos[]
-locais locais[]
-disponibilidades disponibilidades[]
-agendamento agendamento[]
-}
-
-model agendamento{
-  id                      Int      @id @default(autoincrement())
-  data                    DateTime
-  hora                    DateTime
-  descricao               String
-  locais locais[] 
-  profissionais profissionais[] 
-  disponibilidades disponibilidades[] 
-  procedimentos procedimentos[] 
-  paciente paciente[]
-}
-
-model disponibilidades {
-  id                      Int      @id @default(autoincrement())
-  data                    DateTime
-  hora_inicio             DateTime
-  hora_fim                DateTime
-  profissionais profissionais[]
-  agendamento agendamento[]
-
+// Tabela Serviços
+model Servico {
+  id              Int           @id @default(autoincrement()) // Chave primária
+  nome            String
+  preco           Float
+  categoria       String
+  descricao       String
+  profissionalId  Int           // Relacionamento com Profissional
+  profissional    Profissional  @relation(fields: [profissionalId], references: [id])
+  criadoEm        DateTime      @default(now())
 }
