@@ -1,4 +1,6 @@
+import { Localizacao, Servico } from "@prisma/client";
 import { prisma } from "../../../lib/prisma";
+import { create } from "domain";
 
 class CreateUsuarioModel {
   // Método para criar um profissional no banco de dados
@@ -7,17 +9,21 @@ class CreateUsuarioModel {
     email: string,
     telefone: string,
     servico: Servico[],
-    localizacao:Localizacao[]
+    localizacao: Localizacao[]
   ) {
     try {
       // Insere o profissional no banco
-      const Usuario = await prisma.Usuario.create({
+      const usuario = await prisma.usuario.create({
         data: {
           nome: nome,
           email: email,
           telefone: telefone,
-          servico: servico,
-          localizacao:localizacao
+          servicos: {
+            create: servico[0]
+          },
+          localizacao: {
+            create: localizacao[0]
+          }
         },
       });
 
