@@ -36,5 +36,5 @@ app.use((error:Error,request:Request,response:Response,next:NextFunction)=>{
 })
 
 app.listen(port,()=>{
-  console.log(`Aplicação online na porta ${port}`)
+  console.log(`Aplicação online na porta http://localhost:${port}`)
 })

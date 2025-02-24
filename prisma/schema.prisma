@@ -9,14 +9,13 @@ datasource db {
 }
 
 
-model Profissional {
+model Usuario {
   id        Int      @id @default(autoincrement()) // Chave primária
   nome      String
   email     String   @unique                      // Email único
-  telefone  String
-  linkedin  String?
-  instagram String?
   servicos  Servico[] // Relacionamento 1:N com Serviços
+  localizacaoId   Int
+  localizacao     Localizacao  @relation(fields: [localizacaoId], references: [id])
   criadoEm  DateTime @default(now())
 }
 
@@ -26,17 +25,33 @@ model Localizacao {
   numero    String
   bairro    String
   cidade    String
+  estado    String
+  usuario   Usuario[]
   criadoEm  DateTime @default(now())
 }
 
 // Tabela Serviços
 model Servico {
   id              Int           @id @default(autoincrement()) // Chave primária
-  nome            String
-  preco           Float
-  categoria       String
+  nomeMarca            String
+  // preco           Float
   descricao       String
-  profissionalId  Int           // Relacionamento com Profissional
-  profissional    Profissional  @relation(fields: [profissionalId], references: [id])
+  telefone        String
+  categoriaId     Int           // Relacionamento com categoria
+  categoria       Categoria  @relation(fields: [categoriaId], references: [id])
+  usuarioId       Int           // Relacionamento com usuario
+  usuario         Usuario @relation(fields: [usuarioId], references: [id])
   criadoEm        DateTime      @default(now())
+}
+
+
+
+// Tabela Cadastro
+
+model Categoria{
+  id            Int           @id @default(autoincrement()) // Chave primária
+  nome          String   @unique
+  servico       Servico[]
+  criadoEm      DateTime      @default(now())
+  atualizadoEm  DateTime @updatedAt
 }

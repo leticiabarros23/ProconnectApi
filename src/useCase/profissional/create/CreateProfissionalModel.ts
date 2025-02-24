@@ -11,7 +11,7 @@ class CreateProfissionalModel {
   ) {
     try {
       // Insere o profissional no banco
-      const profissional = await prisma.profissional.create({
+      const profissional = await prisma.Profissional.create({
         data: {
           nome: nome,
           email: email,
