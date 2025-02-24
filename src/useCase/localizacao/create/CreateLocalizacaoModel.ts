@@ -5,7 +5,9 @@ class CreateLocalizacaoModel {
   async createLocalizacaoModel(
     numero: string,
     bairro: string,
-    cidade: string
+    cidade: string,
+    estado: string
+
   ) {
     try {
       // Insere a localização no banco
@@ -14,6 +16,7 @@ class CreateLocalizacaoModel {
           numero: numero,
           bairro: bairro,
           cidade: cidade,
+          estado: estado,
         },
       });
 

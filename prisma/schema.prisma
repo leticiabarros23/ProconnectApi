@@ -12,7 +12,8 @@ datasource db {
 model Usuario {
   id        Int      @id @default(autoincrement()) // Chave primária
   nome      String
-  email     String   @unique                      // Email único
+  email     String   @unique 
+  telefone        String                     // Email único
   servicos  Servico[] // Relacionamento 1:N com Serviços
   localizacaoId   Int
   localizacao     Localizacao  @relation(fields: [localizacaoId], references: [id])
@@ -36,7 +37,6 @@ model Servico {
   nomeMarca            String
   // preco           Float
   descricao       String
-  telefone        String
   categoriaId     Int           // Relacionamento com categoria
   categoria       Categoria  @relation(fields: [categoriaId], references: [id])
   usuarioId       Int           // Relacionamento com usuario
@@ -46,7 +46,7 @@ model Servico {
 
 
 
-// Tabela Cadastro
+// Tabela Categoria
 
 model Categoria{
   id            Int           @id @default(autoincrement()) // Chave primária

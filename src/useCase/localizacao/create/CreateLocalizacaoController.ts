@@ -5,14 +5,15 @@ class CreateLocalizacaoController {
   // Método para criar uma localização
   async createLocalizacao(req: Request, res: Response) {
     // Recebe os dados do body
-    const { numero, bairro, cidade } = req.body;
+    const { numero, bairro, cidade,estado} = req.body;
 
     try {
       // Chama o método do model para criar a localização
       const localizacao = await CreateLocalizacaoModel.createLocalizacaoModel(
         numero,
         bairro,
-        cidade
+        cidade,
+        estado
       );
 
       // Retorna a localização criada

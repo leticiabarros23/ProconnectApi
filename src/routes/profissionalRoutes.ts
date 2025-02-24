@@ -1,10 +1,10 @@
 import express from "express";
-import CreateProfissionalController from "../useCase/profissional/create/CreateProfissionalController";
+import CreateUsuarioController from "../useCase/usuario/create/CreateUsuarioController";
 
-const profissionalRoutes = express.Router();
+const usuarioRoutes = express.Router();
 
-profissionalRoutes.post("/profissionais", CreateProfissionalController.createProfissional);
+usuarioRoutes.post("/usuario", CreateUsuarioController.createUsuario);
 
     
 
-export default profissionalRoutes;
+export default usuarioRoutes;
