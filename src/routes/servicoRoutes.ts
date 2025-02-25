@@ -5,6 +5,4 @@ const servicoRoutes = express.Router();
 
 servicoRoutes.post("/servico",CreateServicoController.createServico);
 
-
-
 export default servicoRoutes;

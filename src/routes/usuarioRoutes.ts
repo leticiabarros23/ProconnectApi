@@ -5,6 +5,4 @@ const usuarioRoutes = express.Router();
 
 usuarioRoutes.post("/usuario", CreateUsuarioController.createUsuario);
 
-    
-
 export default usuarioRoutes;

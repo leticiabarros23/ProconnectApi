@@ -5,6 +5,4 @@ const localizacaoRoutes = express.Router();
 
 localizacaoRoutes.post("/localizacao", CreateLocalizacaoController.createLocalizacao);
 
-
-
 export default localizacaoRoutes;
