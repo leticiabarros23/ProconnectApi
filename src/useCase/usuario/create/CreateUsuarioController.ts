@@ -5,7 +5,7 @@ class CreateUsuarioController {
   // Método para criar um usuario
   async createUsuario(req: Request, res: Response) {
     // Recebe os dados do body
-    const { nome, email, telefone,servico,localizacao } = req.body;
+    const { nome, email, telefone, localizacao } = req.body;
 
     try {
       // Chama o método do model para criar usuario
@@ -13,9 +13,7 @@ class CreateUsuarioController {
         nome,
         email,
         telefone,
-        servico,
         localizacao
-        
       );
 
       // Retorna o usuario criado

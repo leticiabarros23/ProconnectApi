@@ -13,11 +13,13 @@ model Usuario {
   id        Int      @id @default(autoincrement()) // Chave primária
   nome      String
   email     String   @unique 
-  telefone        String                     // Email único
+  telefone        String    
+  permissao        String?                 
   servicos  Servico[] // Relacionamento 1:N com Serviços
   localizacaoId   Int
   localizacao     Localizacao  @relation(fields: [localizacaoId], references: [id])
   criadoEm  DateTime @default(now())
+  avaliacao Avaliacao[]
 }
 
 // Tabela Localização
@@ -37,8 +39,8 @@ model Servico {
   nomeMarca            String
   // preco           Float
   descricao       String
-  categoriaId     Int           // Relacionamento com categoria
-  categoria       Categoria  @relation(fields: [categoriaId], references: [id])
+  avaliacao Avaliacao[]
+  categoria       Categoria[]
   usuarioId       Int           // Relacionamento com usuario
   usuario         Usuario @relation(fields: [usuarioId], references: [id])
   criadoEm        DateTime      @default(now())
@@ -52,6 +54,18 @@ model Categoria{
   id            Int           @id @default(autoincrement()) // Chave primária
   nome          String   @unique
   servico       Servico[]
+  criadoEm      DateTime      @default(now())
+  atualizadoEm  DateTime @updatedAt
+}
+
+model Avaliacao{
+  id            Int           @id @default(autoincrement()) // Chave primária
+  star          Float
+  descricao     String
+  servicoId     Int
+  servico       Servico @relation(fields: [servicoId], references: [id])
+  usuarioId     Int
+  usuario       Usuario @relation(fields: [usuarioId], references: [id])
   criadoEm      DateTime      @default(now())
   atualizadoEm  DateTime @updatedAt
 }

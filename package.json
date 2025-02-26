@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npx prisma generate && tsc -p .",
+    "build": "tsc -p .",
     "start": "npm run build && node ./dist/server.js",
     "dev": "tsx watch src/server.ts"
   },

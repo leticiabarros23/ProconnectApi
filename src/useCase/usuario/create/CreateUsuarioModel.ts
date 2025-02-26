@@ -8,7 +8,6 @@ class CreateUsuarioModel {
     nome: string,
     email: string,
     telefone: string,
-    servico: Servico[],
     localizacao: Localizacao[]
   ) {
     try {
@@ -18,9 +17,6 @@ class CreateUsuarioModel {
           nome: nome,
           email: email,
           telefone: telefone,
-          servicos: {
-            create: servico[0]
-          },
           localizacao: {
             create: localizacao[0]
           }

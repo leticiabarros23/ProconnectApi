@@ -1,3 +1,4 @@
+import { Categoria } from "@prisma/client";
 import { prisma } from "../../../lib/prisma";
 
 class CreateServicoModel {
@@ -5,7 +6,7 @@ class CreateServicoModel {
   async createServicoModel(
     nomeMarca: string,
     descricao: string,
-    categoriaId: number,
+    categoria: Categoria[],
     usuarioId: number // Relacionamento com a tabela Profissional
   ) {
     try {
@@ -14,8 +15,12 @@ class CreateServicoModel {
         data: {
           nomeMarca: nomeMarca,
           descricao: descricao,
-          categoriaId: categoriaId,
-          usuarioId: usuarioId, // Relaciona com o profissional
+          categoria: {
+            create: categoria,
+          },
+          usuario: {              
+            connect: { id: usuarioId }
+          }
         },
       });
 
