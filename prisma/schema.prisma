@@ -36,8 +36,8 @@ model Localizacao {
 // Tabela Serviços
 model Servico {
   id              Int           @id @default(autoincrement()) // Chave primária
-  nomeMarca            String
-  // preco           Float
+  nomeNegocio     String
+  preco           Preco[]
   descricao       String
   avaliacao Avaliacao[]
   categoria       Categoria[]
@@ -52,7 +52,7 @@ model Servico {
 
 model Categoria{
   id            Int           @id @default(autoincrement()) // Chave primária
-  nome          String   @unique
+  nomeServico        String   @unique
   servico       Servico[]
   criadoEm      DateTime      @default(now())
   atualizadoEm  DateTime @updatedAt
@@ -66,6 +66,16 @@ model Avaliacao{
   servico       Servico @relation(fields: [servicoId], references: [id])
   usuarioId     Int
   usuario       Usuario @relation(fields: [usuarioId], references: [id])
+  criadoEm      DateTime      @default(now())
+  atualizadoEm  DateTime @updatedAt
+}
+//tabela preco serviço
+model Preco{
+  id            Int           @id @default(autoincrement()) // Chave primária
+  nomeservico   String
+  precificacao  Float
+  servicoId     Int
+  servico       Servico @relation(fields: [servicoId], references: [id])
   criadoEm      DateTime      @default(now())
   atualizadoEm  DateTime @updatedAt
 }

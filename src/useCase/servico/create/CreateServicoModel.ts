@@ -4,7 +4,7 @@ import { prisma } from "../../../lib/prisma";
 class CreateServicoModel {
   // Método para criar um serviço no banco de dados
   async createServicoModel(
-    nomeMarca: string,
+    nomeNegocio: string,
     descricao: string,
     categoria: Categoria[],
     usuarioId: number // Relacionamento com a tabela Profissional
@@ -13,7 +13,7 @@ class CreateServicoModel {
       // Insere o serviço no banco
       const servico = await prisma.servico.create({
         data: {
-          nomeMarca: nomeMarca,
+          nomeNegocio: nomeNegocio,
           descricao: descricao,
           categoria: {
             create: categoria,
