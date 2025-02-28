@@ -3,12 +3,12 @@ import { prisma } from "../../../lib/prisma";
 
 class CreateCategoriaModel {
   // Método para criar uma categoria no banco de dados
-  async createCategoriaModel(nome: string, servicos: Servico[]) {
+  async createCategoriaModel( nomeServico: string, servicos: Servico[]) {
     try {
       // Insere a categoria no banco, associando os serviços se existirem
       const categoria = await prisma.categoria.create({
         data: {
-          nome: nome,
+          nomeServico:  nomeServico,
           servico: {
             create: servicos, // Cria e associa serviços à categoria, se enviados
           },
