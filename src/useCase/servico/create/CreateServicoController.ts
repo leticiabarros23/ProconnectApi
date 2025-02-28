@@ -5,12 +5,14 @@ class CreateServicoController {
   // Método para criar um serviço
   async createServico(req: Request, res: Response) {
     // Recebe os dados do body
-    const { nomeNegocio, descricao, categoria, usuarioId } = req.body;
+    const { nomeNegocio, preco, descricao, avaliacao, categoria, usuarioId } = req.body;
 
     try {
       // Chama o método do model para criar o serviço
       const servico = await CreateServicoModel.createServicoModel(
         nomeNegocio,
+        preco,
+        avaliacao,
         descricao,
         categoria,
         usuarioId
