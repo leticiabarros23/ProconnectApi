@@ -35,28 +35,35 @@ model Localizacao {
 
 // Tabela Serviços
 model Servico {
-  id              Int           @id @default(autoincrement()) // Chave primária
+  id              Int           @id @default(autoincrement()) 
   nomeNegocio     String
-  preco           Preco[]
   descricao       String
-  avaliacao Avaliacao[]
-  categoria       Categoria[]
-  usuarioId       Int           // Relacionamento com usuario
+  usuarioId       Int
   usuario         Usuario @relation(fields: [usuarioId], references: [id])
-  criadoEm        DateTime      @default(now())
+  categoria       ServicoCategoria[]  // Relacionamento N:N com Categoria
+  preco           Preco[]
+  avaliacao       Avaliacao[]
+  criadoEm        DateTime @default(now())
 }
 
-
-
-// Tabela Categoria
-
-model Categoria{
-  id            Int           @id @default(autoincrement()) // Chave primária
-  nomeServico        String   @unique
-  servico       Servico[]
-  criadoEm      DateTime      @default(now())
+model Categoria {
+  id            Int      @id @default(autoincrement()) 
+  nomeServico   String   @unique
+  servicos      ServicoCategoria[]  // Relacionamento N:N com Servico
+  criadoEm      DateTime @default(now())
   atualizadoEm  DateTime @updatedAt
 }
+
+// Tabela intermediária para a relação N:N entre Servico e Categoria
+model ServicoCategoria {
+  servicoId   Int
+  categoriaId Int
+  servico     Servico   @relation(fields: [servicoId], references: [id])
+  categoria   Categoria @relation(fields: [categoriaId], references: [id])
+
+  @@id([servicoId, categoriaId]) // Define uma chave primária composta
+}
+
 
 model Avaliacao{
   id            Int           @id @default(autoincrement()) // Chave primária
