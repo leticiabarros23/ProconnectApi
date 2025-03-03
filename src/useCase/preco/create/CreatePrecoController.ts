@@ -9,14 +9,14 @@ class CreatePrecoController {
 
     try {
       // Chama o método do model para criar a localização
-      const Preco = await CreatePrecoModel.createPrecoModel(
+      const preco = await CreatePrecoModel.createPrecoModel(
         nomeservico,
         precificacao,
         servicoId 
       );
 
       // Retorna a localização criada
-      return res.status(201).json(Preco);
+      return res.status(201).json(preco);
     } catch (error) {
       console.error("Erro ao criar local:", error);
       return res.status(500).json({
