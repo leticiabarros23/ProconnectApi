@@ -6,10 +6,10 @@ class CreatePrecoModel {
   async createPrecoModel(
     nomeservico: string,
     precificacao: number,
-    servicoId: number // Relacionamento com a tabela Profissional
+    servicoId: number // Relacionamento com a tabela servico
   ) {
     try {
-      // Insere o serviço no banco
+      // Insere o preco no banco
       const preco = await prisma.preco.create({
         data: {
             nomeservico: nomeservico,
@@ -20,10 +20,10 @@ class CreatePrecoModel {
         },
       });
 
-      return preco; // Retorna o serviço criado
+      return preco; // Retorna o preco criado
     } catch (error) {
-      console.error("Erro no Model ao criar serviço:", error);
-      throw new Error("Erro ao salvar serviço no banco de dados");
+      console.error("Erro no Model ao criar o preco:", error);
+      throw new Error("Erro ao salvar o preco no banco de dados");
     }
   }
 }
