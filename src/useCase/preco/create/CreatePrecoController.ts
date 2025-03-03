@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import CreateLocalizacaoModel from "./CreatePrecoModel";
+import CreatePrecoModel from "./CreatePrecoModel";
 
-class CreateLocalizacaoController {
+class CreatePrecoController {
   // Método para criar uma preço
   async createPreco(req: Request, res: Response) {
     // Recebe os dados do body
@@ -18,7 +18,7 @@ class CreateLocalizacaoController {
       // Retorna a localização criada
       return res.status(201).json(Preco);
     } catch (error) {
-      console.error("Erro ao criar localização:", error);
+      console.error("Erro ao criar local:", error);
       return res.status(500).json({
         error: true,
         message: "Erro ao criar localização. Verifique os dados enviados.",

@@ -1,4 +1,4 @@
-import express from "express";
+import express from 'express';
 import CreateAvaliacaoController from "../useCase/avaliacao/create/CreateAvaliacaoController";
 
 const avaliacaoRoutes = express.Router();
