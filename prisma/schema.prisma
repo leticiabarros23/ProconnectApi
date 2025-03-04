@@ -40,8 +40,8 @@ model Servico {
   descricao       String
   usuarioId       Int
   usuario         Usuario @relation(fields: [usuarioId], references: [id])
-  categoriaId     Int           // Relacionamento com Categoria
-  categoria       Categoria @relation(fields: [categoriaId], references: [id])
+  categoriaId     Int?           // Relacionamento com Categoria
+  categoria       Categoria? @relation(fields: [categoriaId], references: [id])
   preco           Preco[]
   avaliacao       Avaliacao[]
   criadoEm        DateTime @default(now())

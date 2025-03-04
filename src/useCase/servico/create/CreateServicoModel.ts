@@ -17,14 +17,14 @@ class CreateServicoModel {
         data: {
           nomeNegocio: nomeNegocio,
           preco: {
-            create: preco[0],
+            create: preco
           },
           descricao: descricao,
           avaliacao:{
-            create: avaliacao,
+            create: avaliacao
           },
           categoria: {
-            create: categoria[0]
+            create: categoria
           },
           usuario: {              
             connect: { id: usuarioId }
