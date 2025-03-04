@@ -5,13 +5,14 @@ class CreateCategoriaController {
   // Método para criar uma categoria
   async createCategoria(req: Request, res: Response) {
     // Recebe os dados do body
-    const { nome, servicos } = req.body;
+    const { nomeServico, servicoId } = req.body;
 
     try {
       // Chama o método do model para criar a categoria
       const categoria = await CreateCategoriaModel.createCategoriaModel(
-        nome,
-        servicos
+        nomeServico,
+        servicoId
+
       );
 
       // Retorna a categoria criada
