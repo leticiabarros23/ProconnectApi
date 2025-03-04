@@ -8,7 +8,7 @@ class CreateServicoModel {
     preco: Preco[],
     avaliacao: Avaliacao,
     descricao: string,
-    categoria: Categoria[],
+    categoriaId: number,
     usuarioId: number // Relacionamento com a tabela Profissional
   ) {
     try {
@@ -24,7 +24,7 @@ class CreateServicoModel {
             create: avaliacao
           },
           categoria: {
-            create: categoria
+            connect: { id: categoriaId }
           },
           usuario: {              
             connect: { id: usuarioId }
