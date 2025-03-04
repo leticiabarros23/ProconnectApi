@@ -9,12 +9,12 @@ class CreateCategoriaModel {
       const categoria = await prisma.categoria.create({
         data: {
           nomeServico:  nomeServico,
-          servico: {
+          servicos: {
             create: servicos, // Cria e associa serviços à categoria, se enviados
           },
         },
         include: {
-          servico: true, // Inclui os serviços criados no retorno
+          servicos: true, // Inclui os serviços criados no retorno
         },
       });
 
