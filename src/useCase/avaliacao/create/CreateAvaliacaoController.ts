@@ -4,6 +4,7 @@ import CreateAvaliacaoModel from "./CreateAvaliacaoModel";
 class CreateAvaliacaoController {
   // Método para criar uma avaliacao
   async createAvaliacao(req: Request, res: Response) {
+    console.log('entrou aquiiii')
     // Recebe os dados do body
     const { star, descricao, servicoId, usuarioId  } = req.body;
 

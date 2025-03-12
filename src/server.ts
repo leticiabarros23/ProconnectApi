@@ -5,6 +5,8 @@ import usuarioRoutes from './routes/usuarioRoutes';
 import servicoRoutes from './routes/servicoRoutes';
 import localizacaoRoutes from './routes/localizacaoRoutes';
 import categoriaRoutes from './routes/categoriaRoutes';
+import avaliacaoRoutes from './routes/avaliacaoRoutes';
+import precoRoutes from './routes/precoRoutes';
 
 dotenv.config();
 
@@ -24,6 +26,8 @@ app.use(categoriaRoutes)
 app.use(localizacaoRoutes)
 app.use(servicoRoutes)
 app.use(usuarioRoutes)
+app.use(avaliacaoRoutes)
+app.use(precoRoutes)
 
 app.get('/',(req,res)=>{
   res.status(200).send('<h1>Está Online</h1>')

@@ -4,5 +4,6 @@ import CreateServicoController from "../useCase/servico/create/CreateServicoCont
 const servicoRoutes = express.Router();
 
 servicoRoutes.post("/servico",CreateServicoController.createServico);
+servicoRoutes.get("/servico",CreateServicoController.createServico);
 
 export default servicoRoutes;
