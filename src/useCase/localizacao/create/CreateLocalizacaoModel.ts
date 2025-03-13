@@ -27,17 +27,17 @@ class CreateLocalizacaoModel {
     }
   }
 
-// Método para buscar uma localização pelo ID
-async getLocalizacaoModel(id: number) {
-  try {
-    const localizacao = await prisma.localizacao.findUnique({
-      where: { id: id },
-    });
+  // Método para buscar uma localização pelo ID
+  async getLocalizacaoModel(id: number) {
+    try {
+      const localizacao = await prisma.localizacao.findUnique({
+        where: { id: id },
+      });
 
-    return localizacao;  // Retorna a localização encontrada
-  } catch (error) {
-    console.error("Erro ao buscar localização:", error);
-    throw new Error("Erro ao buscar localização no banco de dados");
+      return localizacao;  // Retorna a localização encontrada
+    } catch (error) {
+      console.error("Erro ao buscar localização:", error);
+      throw new Error("Erro ao buscar localização no banco de dados");
     }
   }
 
@@ -67,8 +67,8 @@ async getLocalizacaoModel(id: number) {
     }
   }
 
-   // Método para deletar uma localização no banco de dados
-   async deleteLocalizacaoModel(id: number) {
+  // Método para deletar uma localização no banco de dados
+  async deleteLocalizacaoModel(id: number) {
     try {
       const localizacaoDeletada = await prisma.localizacao.delete({
         where: { id: id },

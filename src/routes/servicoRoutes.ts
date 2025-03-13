@@ -5,7 +5,7 @@ const servicoRoutes = express.Router();
 
 servicoRoutes.post("/servico",CreateServicoController.createServico);
 servicoRoutes.get("/servico/:id", CreateServicoController.getServico);
-servicoRoutes.delete("/servico/:id", CreateServicoController.deleteServico);
 servicoRoutes.put("/servico/:id", CreateServicoController.updateServico);
+servicoRoutes.delete("/servico/:id", CreateServicoController.deleteServico);
 
 export default servicoRoutes;

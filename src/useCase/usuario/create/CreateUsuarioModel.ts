@@ -36,27 +36,27 @@ class CreateUsuarioModel {
         where: { id: id },
         include: { localizacao: true },
       });
-  
+
       return usuario;
     } catch (error) {
       console.error("Erro no Model ao buscar profissional:", error);
       throw new Error("Erro ao buscar profissional no banco de dados");
     }
   }
-  
+
   async deleteUsuarioModel(id: number) {  // Alterado para `number`
     try {
       const usuario = await prisma.usuario.delete({
         where: { id: id },
       });
-  
+
       return usuario;
     } catch (error) {
       console.error("Erro no Model ao deletar profissional:", error);
       throw new Error("Erro ao deletar profissional no banco de dados");
     }
   }
-  
+
   async updateUsuarioModel(
     id: number, // Alterado para `number`
     nome: string,
@@ -79,7 +79,7 @@ class CreateUsuarioModel {
           },
         },
       });
-  
+
       return usuario;
     } catch (error) {
       console.error("Erro no Model ao atualizar profissional:", error);

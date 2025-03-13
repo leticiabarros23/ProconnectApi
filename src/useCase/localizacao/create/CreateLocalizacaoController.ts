@@ -5,7 +5,7 @@ class CreateLocalizacaoController {
   // Método para criar uma localização
   async createLocalizacao(req: Request, res: Response) {
     // Recebe os dados do body
-    const { numero, bairro, cidade,estado} = req.body;
+    const { numero, bairro, cidade, estado } = req.body;
 
     try {
       // Chama o método do model para criar a localização
@@ -27,27 +27,27 @@ class CreateLocalizacaoController {
     }
   }
 
-// Método para buscar uma localização pelo ID
-async getLocalizacao(req: Request, res: Response) {
-  const { id } = req.params;  // Recebe o ID da URL
+  // Método para buscar uma localização pelo ID
+  async getLocalizacao(req: Request, res: Response) {
+    const { id } = req.params;  // Recebe o ID da URL
 
-  try {
-    // Chama o método do model para buscar a localização
-    const localizacao = await CreateLocalizacaoModel.getLocalizacaoModel(Number(id));
+    try {
+      // Chama o método do model para buscar a localização
+      const localizacao = await CreateLocalizacaoModel.getLocalizacaoModel(Number(id));
 
-    if (!localizacao) {
-      return res.status(404).json({
+      if (!localizacao) {
+        return res.status(404).json({
+          error: true,
+          message: "Localização não encontrada.",
+        });
+      }
+
+      return res.status(200).json(localizacao);  // Retorna a localização encontrada
+    } catch (error) {
+      console.error("Erro ao buscar localização:", error);
+      return res.status(500).json({
         error: true,
-        message: "Localização não encontrada.",
-      });
-    }
-
-    return res.status(200).json(localizacao);  // Retorna a localização encontrada
-  } catch (error) {
-    console.error("Erro ao buscar localização:", error);
-    return res.status(500).json({
-      error: true,
-      message: "Erro ao buscar localização. Tente novamente mais tarde.",
+        message: "Erro ao buscar localização. Tente novamente mais tarde.",
       });
     }
   }
