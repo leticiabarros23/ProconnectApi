@@ -6,24 +6,47 @@ class CreatePrecoModel {
   async createPrecoModel(
     nomeservico: string,
     precificacao: number,
-    servicoId: number // Relacionamento com a tabela servico
+    servicoId: number 
   ) {
     try {
-      // Insere o preco no banco
       const preco = await prisma.preco.create({
         data: {
-            nomeservico: nomeservico,
-            precificacao: precificacao,
-            servico: {              
-            connect: { id:  servicoId }
-          }
+          nomeservico: nomeservico,
+          precificacao: precificacao,
+          servico: { connect: { id: servicoId } }
         },
       });
-
-      return preco; // Retorna o preco criado
+      return preco;
     } catch (error) {
       console.error("Erro no Model ao criar o preco:", error);
       throw new Error("Erro ao salvar o preco no banco de dados");
+    }
+  }
+
+  // Método para atualizar um preco no banco de dados
+  async updatePrecoModel(id: number, data: { nomeservico?: string; precificacao?: number }) {
+    try {
+      const precoAtualizado = await prisma.preco.update({
+        where: { id },
+        data,
+      });
+      return precoAtualizado;
+    } catch (error) {
+      console.error("Erro no Model ao atualizar o preco:", error);
+      throw new Error("Erro ao atualizar o preco no banco de dados");
+    }
+  }
+
+  // Método para deletar um preco no banco de dados
+  async deletePrecoModel(id: number) {
+    try {
+      const precoDeletado = await prisma.preco.delete({
+        where: { id },
+      });
+      return precoDeletado;
+    } catch (error) {
+      console.error("Erro no Model ao deletar o preco:", error);
+      throw new Error("Erro ao deletar o preco no banco de dados");
     }
   }
 }
