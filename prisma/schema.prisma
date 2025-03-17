@@ -35,7 +35,8 @@ model Localizacao {
 
 // Tabela Serviços
 model Servico {
-  id              Int           @id @default(autoincrement()) 
+  id              Int           @id @default(autoincrement())
+  negUrl          String?
   nomeNegocio     String
   descricao       String
   usuarioId       Int
