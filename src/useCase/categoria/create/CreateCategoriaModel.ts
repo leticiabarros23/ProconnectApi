@@ -18,17 +18,14 @@ class CreateCategoriaModel {
     }
   }
 
-  // Método para buscar uma categoria pelo ID
-  async getCategoriaModel(id: number) {
+  // Método para buscar todas as categorias
+  async getAllCategoriaModel() {
     try {
-      const categoria = await prisma.categoria.findUnique({
-        where: { id: id },  // Procura pela categoria com o ID fornecido
-      });
-
-      return categoria;  // Retorna a categoria encontrada
+      const categorias = await prisma.categoria.findMany();  // Busca todas as categorias
+      return categorias;  // Retorna todas as categorias encontradas
     } catch (error) {
-      console.error("Erro ao buscar categoria:", error);
-      throw new Error("Erro ao buscar categoria no banco de dados");
+      console.error("Erro ao buscar todas as categorias:", error);
+      throw new Error("Erro ao buscar categorias no banco de dados");
     }
   }
 

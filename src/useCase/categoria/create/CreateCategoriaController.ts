@@ -24,30 +24,27 @@ class CreateCategoriaController {
     }
   }
 
-  // Método para buscar uma categoria pelo ID
-  async getCategoria(req: Request, res: Response) {
-    const { id } = req.params;  // Recebe o ID da URL
+ // Método para buscar todas as categorias
+ async getAllCategoria(req: Request, res: Response) {
+  try {
+    const categorias = await CreateCategoriaModel.getAllCategoriaModel();
 
-    try {
-      const categoria = await CreateCategoriaModel.getCategoriaModel(Number(id));
-
-      if (!categoria) {
-        return res.status(404).json({
-          error: true,
-          message: "Categoria não encontrada.",
-        });
-      }
-
-      return res.status(200).json(categoria);  // Retorna a categoria encontrada
-    } catch (error) {
-      console.error("Erro ao buscar categoria:", error);
-      return res.status(500).json({
+    if (categorias.length === 0) {
+      return res.status(404).json({
         error: true,
-        message: "Erro ao buscar categoria. Tente novamente mais tarde.",
+        message: "Nenhuma categoria encontrada.",
       });
     }
-  }
 
+    return res.status(200).json(categorias);  // Retorna todas as categorias
+  } catch (error) {
+    console.error("Erro ao buscar todas as categorias:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Erro ao buscar as categorias. Tente novamente mais tarde.",
+    });
+  }
+}
   // Método para atualizar uma categoria
   async updateCategoria(req: Request, res: Response) {
     const { id } = req.params;  // Recebe o ID da URL
