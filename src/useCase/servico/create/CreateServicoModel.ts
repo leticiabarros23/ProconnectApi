@@ -39,27 +39,25 @@ class CreateServicoModel {
     }
   }
 
-  // Método para buscar um serviço pelo ID
-  async getServicoModel(id: number) {  // Corrigido para garantir que `id` seja `number`
+  // Método para buscar todos os serviços
+  async getAllServicoModel() {
     try {
-      // Busca o serviço com o ID fornecido
-      const servico = await prisma.servico.findUnique({
-        where: { id: id },  // A busca é feita pelo `id`
+      const servicos = await prisma.servico.findMany({
         include: {
           preco: true,           // Inclui os dados de preço relacionados
           avaliacao: true,       // Inclui os dados de avaliação relacionados
           categoria: true,       // Inclui os dados da categoria relacionada
           usuario: true          // Inclui os dados do usuário relacionado
-        },
+        }
       });
 
-      return servico;  // Retorna o serviço encontrado
+      return servicos;  // Retorna todos os serviços encontrados
     } catch (error) {
-      console.error("Erro ao buscar serviço no model:", error);
-      throw new Error("Erro ao buscar serviço no banco de dados");
+      console.error("Erro ao buscar todos os serviços no model:", error);
+      throw new Error("Erro ao buscar serviços no banco de dados");
     }
   }
-
+  
   // Método para deletar um serviço
   async deleteServicoModel(id: number) {
     try {

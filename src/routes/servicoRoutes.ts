@@ -4,7 +4,7 @@ import CreateServicoController from "../useCase/servico/create/CreateServicoCont
 const servicoRoutes = express.Router();
 
 servicoRoutes.post("/servico",CreateServicoController.createServico);
-servicoRoutes.get("/servico/:id", CreateServicoController.getServico);
+servicoRoutes.get("/servico", CreateServicoController.getAllServico);
 servicoRoutes.put("/servico/:id", CreateServicoController.updateServico);
 servicoRoutes.delete("/servico/:id", CreateServicoController.deleteServico);
 

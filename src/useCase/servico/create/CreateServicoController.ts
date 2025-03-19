@@ -30,29 +30,27 @@ class CreateServicoController {
   }
 
 
-  // Método para buscar um serviço pelo id
-  async getServico(req: Request, res: Response) {
-    const { id } = req.params;  // Recebe o id pela URL
+ // Método para buscar todos os serviços
+ async getAllServico(req: Request, res: Response) {
+  try {
+    const servicos = await CreateServicoModel.getAllServicoModel();
 
-    try {
-      const servico = await CreateServicoModel.getServicoModel(Number(id));
-
-      if (!servico) {
-        return res.status(404).json({
-          error: true,
-          message: "Serviço não encontrado",
-        });
-      }
-
-      return res.status(200).json(servico);  // Retorna o serviço encontrado
-    } catch (error) {
-      console.error("Erro ao buscar serviço:", error);
-      return res.status(500).json({
+    if (servicos.length === 0) {
+      return res.status(404).json({
         error: true,
-        message: "Erro ao buscar serviço. Tente novamente mais tarde.",
+        message: "Nenhum serviço encontrado.",
       });
     }
+
+    return res.status(200).json(servicos);  // Retorna todos os serviços
+  } catch (error) {
+    console.error("Erro ao buscar todos os serviços:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Erro ao buscar serviços. Tente novamente mais tarde.",
+    });
   }
+}
 
   // Método para deletar um serviço
   async deleteServico(req: Request, res: Response) {
