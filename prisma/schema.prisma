@@ -30,6 +30,7 @@ model Localizacao {
   cidade    String
   estado    String
   usuario   Usuario[]
+  servico Servico[]
   criadoEm  DateTime @default(now())
 }
 
@@ -45,6 +46,8 @@ model Servico {
   categoria       Categoria? @relation(fields: [categoriaId], references: [id])
   preco           Preco[]
   avaliacao       Avaliacao[]
+  localizacaoId   Int?
+  localizacao     Localizacao?  @relation(fields: [localizacaoId], references: [id])
   criadoEm        DateTime @default(now())
 }
 
