@@ -13,10 +13,9 @@ model Usuario {
   id        Int      @id @default(autoincrement()) // Chave primária
   nome      String
   email     String   @unique 
-  telefone        String    
-  permissao        String?                 
+  telefone        String                    
   servicos  Servico[] // Relacionamento 1:N com Serviços
-  localizacaoId   Int
+  localizacaoId   Int @unique
   localizacao     Localizacao  @relation(fields: [localizacaoId], references: [id])
   criadoEm  DateTime @default(now())
   avaliacao Avaliacao[]
@@ -29,7 +28,8 @@ model Localizacao {
   bairro    String
   cidade    String
   estado    String
-  usuario   Usuario[]
+  isUserLocalization Boolean?
+  usuario   Usuario?
   servico Servico[]
   criadoEm  DateTime @default(now())
 }
@@ -37,7 +37,6 @@ model Localizacao {
 // Tabela Serviços
 model Servico {
   id              Int           @id @default(autoincrement())
-  negUrl          String?
   nomeNegocio     String
   descricao       String
   usuarioId       Int

@@ -31,7 +31,7 @@ class CreateLocalizacaoModel {
   async getLocalizacaoModel(id: number) {
     try {
       const localizacao = await prisma.localizacao.findUnique({
-        where: { id: id },
+        where: { id: id, },
       });
 
       return localizacao;  // Retorna a localização encontrada
