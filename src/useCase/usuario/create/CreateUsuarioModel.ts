@@ -1,4 +1,3 @@
-import { Localizacao } from "@prisma/client";
 import { prisma } from "../../../lib/prisma";
 
 class CreateUsuarioModel {
@@ -6,8 +5,7 @@ class CreateUsuarioModel {
   async createUsuarioModel(
     nome: string,
     email: string,
-    telefone: string,
-    localizacao: Localizacao[]
+    telefone: string
   ) {
     try {
       // Insere o profissional no banco
@@ -15,10 +13,7 @@ class CreateUsuarioModel {
         data: {
           nome: nome,
           email: email,
-          telefone: telefone,
-          localizacao: {
-            create: localizacao[0] // Assume-se que você está criando uma única localizacao
-          }
+          telefone: telefone
         },
       });
 
@@ -33,8 +28,7 @@ class CreateUsuarioModel {
   async getUsuarioModel(id: number) {  // Alterado para `number`
     try {
       const usuario = await prisma.usuario.findUnique({
-        where: { id: id },
-        include: { localizacao: true },
+        where: { id: id }
       });
 
       return usuario;
@@ -61,8 +55,7 @@ class CreateUsuarioModel {
     id: number, // Alterado para `number`
     nome: string,
     email: string,
-    telefone: string,
-    localizacao: Localizacao[]
+    telefone: string
   ) {
     try {
       const usuario = await prisma.usuario.update({
@@ -70,12 +63,7 @@ class CreateUsuarioModel {
         data: {
           nome: nome,
           email: email,
-          telefone: telefone,
-          localizacao: {
-            update: {
-              where: { id: localizacao[0].id },
-              data: localizacao[0],
-            },
+          telefone: telefone
           },
         },
       });

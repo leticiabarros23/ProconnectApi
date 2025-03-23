@@ -15,8 +15,6 @@ model Usuario {
   email     String   @unique 
   telefone        String                    
   servicos  Servico[] // Relacionamento 1:N com Serviços
-  localizacaoId   Int @unique
-  localizacao     Localizacao  @relation(fields: [localizacaoId], references: [id])
   criadoEm  DateTime @default(now())
   avaliacao Avaliacao[]
 }
@@ -28,8 +26,6 @@ model Localizacao {
   bairro    String
   cidade    String
   estado    String
-  isUserLocalization Boolean?
-  usuario   Usuario?
   servico Servico[]
   criadoEm  DateTime @default(now())
 }

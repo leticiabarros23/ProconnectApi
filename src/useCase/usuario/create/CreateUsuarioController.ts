@@ -4,15 +4,14 @@ import CreateUsuarioModel from "./CreateUsuarioModel";
 class CreateUsuarioController {
   // Método para criar um usuario
   async createUsuario(req: Request, res: Response) {
-    const { nome, email, telefone, localizacao } = req.body;
+    const { nome, email, telefone} = req.body;
 
     try {
       // Chama o método do model para criar usuario
       const usuario = await CreateUsuarioModel.createUsuarioModel(
         nome,
         email,
-        telefone,
-        localizacao
+        telefone
       );
 
       return res.status(201).json(usuario);
@@ -62,7 +61,7 @@ class CreateUsuarioController {
   // Método para atualizar um usuário
   async updateUsuario(req: Request, res: Response) {
     const id = parseInt(req.params.id, 10);  // Convertendo o ID da URL para número
-    const { nome, email, telefone, localizacao } = req.body;  // Dados que foram enviados no corpo da requisição
+    const { nome, email, telefone } = req.body;  // Dados que foram enviados no corpo da requisição
 
     if (isNaN(id)) {
       return res.status(400).json({
@@ -76,8 +75,7 @@ class CreateUsuarioController {
         id,
         nome,
         email,
-        telefone,
-        localizacao
+        telefone
       );
 
       if (!usuarioAtualizado) {
