@@ -84,6 +84,19 @@ class CreateLocalizacaoController {
     }
   }
 
+  async getAllLocalizacoes(req: Request, res: Response) {
+    try {
+      const localizacoes = await CreateLocalizacaoModel.getAllLocalizacoesModel();
+      return res.status(200).json(localizacoes);
+    } catch (error) {
+      console.error("Erro ao buscar localizações:", error);
+      return res.status(500).json({
+        error: true,
+        message: "Erro ao buscar localizações.",
+      });
+    }
+  }
+  
   // Método para deletar uma localização
   async deleteLocalizacao(req: Request, res: Response) {
     const { id } = req.params;  // Recebe o ID da URL

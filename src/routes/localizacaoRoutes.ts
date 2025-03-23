@@ -3,6 +3,7 @@ import CreateLocalizacaoController from "../useCase/localizacao/create/CreateLoc
 
 const localizacaoRoutes = express.Router();
 
+localizacaoRoutes.get("/localizacao", CreateLocalizacaoController.getAllLocalizacoes);
 localizacaoRoutes.post("/localizacao", CreateLocalizacaoController.createLocalizacao);
 localizacaoRoutes.get("/localizacao/:id", CreateLocalizacaoController.getLocalizacao);
 localizacaoRoutes.put("/localizacao/:id", CreateLocalizacaoController.updateLocalizacao);

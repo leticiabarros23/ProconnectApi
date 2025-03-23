@@ -2,23 +2,27 @@ import { Request, Response } from "express";
 import CreateServicoModel from "./CreateServicoModel";
 
 class CreateServicoController {
-  // Método para criar um serviço
+  // Método para criar um serviço com localização e preços
   async createServico(req: Request, res: Response) {
-    // Recebe os dados do body
-    const { nomeNegocio, preco, descricao, avaliacao, categoriaId, usuarioId } = req.body;
+    const {
+      nomeNegocio,
+      descricao,
+      preco,
+      categoriaId,
+      usuarioId,
+      localizacao
+    } = req.body;
 
     try {
-      // Chama o método do model para criar o serviço
       const servico = await CreateServicoModel.createServicoModel(
         nomeNegocio,
-        preco,
-        avaliacao,
         descricao,
+        preco,
         categoriaId,
-        usuarioId
+        usuarioId,
+        localizacao
       );
 
-      // Retorna o serviço criado
       return res.status(201).json(servico);
     } catch (error) {
       console.error("Erro ao criar serviço:", error);
@@ -29,28 +33,27 @@ class CreateServicoController {
     }
   }
 
+  // Método para buscar todos os serviços
+  async getAllServico(req: Request, res: Response) {
+    try {
+      const servicos = await CreateServicoModel.getAllServicoModel();
 
- // Método para buscar todos os serviços
- async getAllServico(req: Request, res: Response) {
-  try {
-    const servicos = await CreateServicoModel.getAllServicoModel();
+      if (servicos.length === 0) {
+        return res.status(404).json({
+          error: true,
+          message: "Nenhum serviço encontrado.",
+        });
+      }
 
-    if (servicos.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json(servicos);
+    } catch (error) {
+      console.error("Erro ao buscar todos os serviços:", error);
+      return res.status(500).json({
         error: true,
-        message: "Nenhum serviço encontrado.",
+        message: "Erro ao buscar serviços. Tente novamente mais tarde.",
       });
     }
-
-    return res.status(200).json(servicos);  // Retorna todos os serviços
-  } catch (error) {
-    console.error("Erro ao buscar todos os serviços:", error);
-    return res.status(500).json({
-      error: true,
-      message: "Erro ao buscar serviços. Tente novamente mais tarde.",
-    });
   }
-}
 
   // Método para deletar um serviço
   async deleteServico(req: Request, res: Response) {
@@ -80,8 +83,15 @@ class CreateServicoController {
 
   // Método para atualizar um serviço
   async updateServico(req: Request, res: Response) {
-    const { id } = req.params;  // Recebe o id pela URL
-    const { nomeNegocio, preco, descricao, avaliacao, categoriaId, usuarioId } = req.body;
+    const { id } = req.params;
+    const {
+      nomeNegocio,
+      preco,
+      avaliacao,
+      descricao,
+      categoriaId,
+      usuarioId
+    } = req.body;
 
     try {
       const servicoAtualizado = await CreateServicoModel.updateServicoModel(
@@ -101,7 +111,7 @@ class CreateServicoController {
         });
       }
 
-      return res.status(200).json(servicoAtualizado);  // Retorna o serviço atualizado
+      return res.status(200).json(servicoAtualizado);
     } catch (error) {
       console.error("Erro ao atualizar serviço:", error);
       return res.status(500).json({
@@ -111,6 +121,5 @@ class CreateServicoController {
     }
   }
 }
-
 
 export default new CreateServicoController();

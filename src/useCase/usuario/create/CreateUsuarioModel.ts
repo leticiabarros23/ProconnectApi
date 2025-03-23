@@ -8,7 +8,6 @@ class CreateUsuarioModel {
     telefone: string
   ) {
     try {
-      // Insere o profissional no banco
       const usuario = await prisma.usuario.create({
         data: {
           nome: nome,
@@ -17,15 +16,14 @@ class CreateUsuarioModel {
         },
       });
 
-      return usuario; // Retorna o profissional criado
+      return usuario;
     } catch (error) {
       console.error("Erro no Model ao criar profissional:", error);
       throw new Error("Erro ao salvar profissional no banco de dados");
     }
   }
 
-  // Método para buscar um usuário pelo ID
-  async getUsuarioModel(id: number) {  // Alterado para `number`
+  async getUsuarioModel(id: number) {
     try {
       const usuario = await prisma.usuario.findUnique({
         where: { id: id }
@@ -38,7 +36,7 @@ class CreateUsuarioModel {
     }
   }
 
-  async deleteUsuarioModel(id: number) {  // Alterado para `number`
+  async deleteUsuarioModel(id: number) {
     try {
       const usuario = await prisma.usuario.delete({
         where: { id: id },
@@ -52,7 +50,7 @@ class CreateUsuarioModel {
   }
 
   async updateUsuarioModel(
-    id: number, // Alterado para `number`
+    id: number,
     nome: string,
     email: string,
     telefone: string
@@ -64,7 +62,6 @@ class CreateUsuarioModel {
           nome: nome,
           email: email,
           telefone: telefone
-          },
         },
       });
 
@@ -74,6 +71,6 @@ class CreateUsuarioModel {
       throw new Error("Erro ao atualizar profissional no banco de dados");
     }
   }
-}
+} // ✅ Aqui está a chave que estava faltando!
 
 export default new CreateUsuarioModel();

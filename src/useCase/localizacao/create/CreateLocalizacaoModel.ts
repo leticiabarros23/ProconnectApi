@@ -67,6 +67,17 @@ class CreateLocalizacaoModel {
     }
   }
 
+  // Método para buscar todas as localizações
+async getAllLocalizacoesModel() {
+  try {
+    const localizacoes = await prisma.localizacao.findMany();
+    return localizacoes;
+  } catch (error) {
+    console.error("Erro ao buscar todas as localizações:", error);
+    throw new Error("Erro ao buscar localizações no banco de dados");
+  }
+}
+
   // Método para deletar uma localização no banco de dados
   async deleteLocalizacaoModel(id: number) {
     try {

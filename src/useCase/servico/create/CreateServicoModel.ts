@@ -1,155 +1,93 @@
-import { Categoria, Avaliacao, Preco, Usuario } from "@prisma/client";
-import { prisma } from "../../../lib/prisma";
-
+import { prisma } from "../../../lib/prisma"; 
 class CreateServicoModel {
-  // Método para criar um serviço no banco de dados
   async createServicoModel(
     nomeNegocio: string,
-    preco: Preco[],
-    avaliacao: Avaliacao,
     descricao: string,
+    preco: {
+      nomeservico: string;
+      precificacao: number;
+    }[],
     categoriaId: number,
-    usuarioId: number // Relacionamento com a tabela Profissional
+    usuarioId: number,
+    localizacao?: {
+      numero: string;
+      bairro: string;
+      cidade: string;
+      estado: string;
+    }
   ) {
-    try {
-      // Insere o serviço no banco
-      const servico = await prisma.servico.create({
-        data: {
-          nomeNegocio: nomeNegocio,
-          preco: {
-            create: preco
-          },
-          descricao: descricao,
-          avaliacao: {
-            create: avaliacao
-          },
-          categoria: {
-            connect: { id: categoriaId }
-          },
-          usuario: {
-            connect: { id: usuarioId }
-          }
-        },
-      });
-
-      return servico; // Retorna o serviço criado
-    } catch (error) {
-      console.error("Erro no Model ao criar serviço:", error);
-      throw new Error("Erro ao salvar serviço no banco de dados");
-    }
+    return await prisma.servico.create({
+      data: {
+        nomeNegocio,
+        descricao,
+        categoria: { connect: { id: categoriaId } },
+        usuario: { connect: { id: usuarioId } },
+        localizacao: localizacao
+          ? {
+              create: {
+                numero: localizacao.numero,
+                bairro: localizacao.bairro,
+                cidade: localizacao.cidade,
+                estado: localizacao.estado
+              }
+            }
+          : undefined,
+        preco: preco && preco.length > 0
+          ? {
+              create: preco.map((item) => ({
+                nomeservico: item.nomeservico,
+                precificacao: item.precificacao
+              }))
+            }
+          : undefined
+      },
+      include: {
+        localizacao: true,
+        preco: true,
+        categoria: true,
+        usuario: true
+      }
+    });
   }
 
-  // Método para buscar todos os serviços
   async getAllServicoModel() {
-    try {
-      const servicos = await prisma.servico.findMany({
-        include: {
-          preco: true,           // Inclui os dados de preço relacionados
-          avaliacao: true,       // Inclui os dados de avaliação relacionados
-          categoria: true,       // Inclui os dados da categoria relacionada
-          usuario: true          // Inclui os dados do usuário relacionado
-        }
-      });
-
-      return servicos;  // Retorna todos os serviços encontrados
-    } catch (error) {
-      console.error("Erro ao buscar todos os serviços no model:", error);
-      throw new Error("Erro ao buscar serviços no banco de dados");
-    }
+    return await prisma.servico.findMany({
+      include: {
+        usuario: true,
+        categoria: true,
+        localizacao: true,
+        preco: true,
+        avaliacao: true
+      }
+    });
   }
-  
-  // Método para deletar um serviço
+
   async deleteServicoModel(id: number) {
-    try {
-      // Primeiro, exclui os preços relacionados a este serviço
-      await prisma.preco.deleteMany({
-        where: {
-          servicoId: id,
-        },
-      });
-
-      // Exclui as avaliações relacionadas a este serviço
-      await prisma.avaliacao.deleteMany({
-        where: {
-          servicoId: id,
-        },
-      });
-
-      // Agora, deleta o serviço
-      const servicoDeletado = await prisma.servico.delete({
-        where: {
-          id: id,
-        },
-      });
-
-      return servicoDeletado;  // Retorna o serviço deletado
-    } catch (error) {
-      console.error("Erro ao deletar serviço no model:", error);
-      throw new Error("Erro ao deletar serviço no banco de dados");
-    }
+    return await prisma.servico.delete({
+      where: { id }
+    });
   }
 
-  // Método para atualizar um serviço
   async updateServicoModel(
     id: number,
     nomeNegocio: string,
-    preco: Preco[],  // Array de Precos
-    avaliacao: Avaliacao[],  // Array de Avaliacoes
+    preco: any,
+    avaliacao: any,
     descricao: string,
     categoriaId: number,
     usuarioId: number
   ) {
-    try {
-      const servicoAtualizado = await prisma.servico.update({
-        where: { id: id },
-        data: {
-          nomeNegocio,
-          descricao,
-
-          // Verifica se preco é um array e está sendo passado corretamente
-          preco: preco && preco.length > 0 ? {
-            update: preco.map(p => ({
-              where: { id: p.id },  // Identifica pelo id
-              data: {
-                nomeservico: p.nomeservico,
-                precificacao: p.precificacao,
-                servicoId: p.servicoId
-              }
-            }))
-          } : undefined,  // Caso preço não seja passado, não atualiza nada
-
-          // Verifica se avaliacao é um array e está sendo passado corretamente
-          avaliacao: avaliacao && avaliacao.length > 0 ? {
-            update: avaliacao.map(a => ({
-              where: { id: a.id },  // Identifica pela avaliação ID
-              data: {
-                star: a.star,
-                descricao: a.descricao,
-                usuarioId: a.usuarioId
-              }
-            }))
-          } : undefined,  // Caso avaliação não seja passada, não atualiza nada
-
-          // Atualiza a categoria
-          categoria: categoriaId ? {
-            connect: { id: categoriaId }
-          } : undefined,
-
-          // Atualiza o usuário
-          usuario: usuarioId ? {
-            connect: { id: usuarioId }
-          } : undefined,
-        },
-      });
-
-      return servicoAtualizado;
-    } catch (error) {
-      console.error("Erro ao atualizar serviço:", error);
-      throw new Error("Erro ao atualizar serviço no banco de dados");
-    }
+    return await prisma.servico.update({
+      where: { id },
+      data: {
+        nomeNegocio,
+        descricao,
+        categoria: { connect: { id: categoriaId } },
+        usuario: { connect: { id: usuarioId } }
+        // Atualização de localizacao e preco pode ser adicionada aqui futuramente
+      }
+    });
   }
 }
-
-
 
 export default new CreateServicoModel();
