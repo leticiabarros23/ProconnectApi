@@ -23,6 +23,17 @@ class CreatePrecoModel {
     }
   }
 
+  // Método para buscar todos os preços
+  async getAllPrecoModel() {
+    try {
+      const precos = await prisma.preco.findMany();  // Busca todos os preços
+      return precos;  // Retorna todos os preços encontrados
+    } catch (error) {
+      console.error("Erro ao buscar todos os preços:", error);
+      throw new Error("Erro ao buscar preços no banco de dados");
+    }
+  }
+
   // Método para atualizar um preco no banco de dados
   async updatePrecoModel(id: number, data: { nomeservico?: string; precificacao?: number }) {
     try {

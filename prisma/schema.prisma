@@ -3,76 +3,72 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql" // Define qual o banco de dados estamos usando
-  url       = env("DATABASE_URL") // fazer conexão com o banco de dados
-  directUrl = env("DIRECT_URL") 
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
-
 
 model Usuario {
-  id        Int      @id @default(autoincrement()) // Chave primária
+  id        Int         @id @default(autoincrement())
   nome      String
-  email     String   @unique 
-  telefone        String                    
-  servicos  Servico[] // Relacionamento 1:N com Serviços
-  criadoEm  DateTime @default(now())
+  email     String      @unique
+  telefone  String
+  criadoEm  DateTime    @default(now())
   avaliacao Avaliacao[]
+  servicos  Servico[]
 }
 
-// Tabela Localização
 model Localizacao {
-  id        Int      @id @default(autoincrement()) // Chave primária
-  numero    String
-  bairro    String
-  cidade    String
-  estado    String
-  servico Servico[]
-  criadoEm  DateTime @default(now())
+  id       Int       @id @default(autoincrement())
+  numero   String
+  bairro   String
+  cidade   String
+  estado   String
+  criadoEm DateTime  @default(now())
+  servico  Servico[]
 }
 
-// Tabela Serviços
 model Servico {
-  id              Int           @id @default(autoincrement())
-  nomeNegocio     String
-  descricao       String
-  usuarioId       Int
-  usuario         Usuario @relation(fields: [usuarioId], references: [id])
-  categoriaId     Int?           // Relacionamento com Categoria
-  categoria       Categoria? @relation(fields: [categoriaId], references: [id])
-  preco           Preco[]
-  avaliacao       Avaliacao[]
-  localizacaoId   Int?
-  localizacao     Localizacao?  @relation(fields: [localizacaoId], references: [id])
-  criadoEm        DateTime @default(now())
+  id            Int          @id @default(autoincrement())
+  nomeNegocio   String
+  descricao     String
+  usuarioId     Int
+  categoriaId   Int?
+  localizacaoId Int?
+  criadoEm      DateTime     @default(now())
+  avaliacao     Avaliacao[]
+  preco         Preco[]
+  categoria     Categoria?   @relation(fields: [categoriaId], references: [id])
+  localizacao   Localizacao? @relation(fields: [localizacaoId], references: [id])
+  usuario       Usuario      @relation(fields: [usuarioId], references: [id])
 }
 
 model Categoria {
-  id            Int      @id @default(autoincrement()) 
-  nomeServico   String   @unique
-  servicos      Servico[]  // Relacionamento 1:N (uma categoria tem vários serviços)
-  criadoEm      DateTime @default(now())
-  atualizadoEm  DateTime @updatedAt
+  id           Int       @id @default(autoincrement())
+  nomeServico  String    @unique
+  criadoEm     DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+  servicos     Servico[]
 }
 
-
-model Avaliacao{
-  id            Int           @id @default(autoincrement()) // Chave primária
-  star          Float
-  descricao     String
-  servicoId     Int
-  servico       Servico @relation(fields: [servicoId], references: [id])
-  usuarioId     Int
-  usuario       Usuario @relation(fields: [usuarioId], references: [id])
-  criadoEm      DateTime      @default(now())
-  atualizadoEm  DateTime @updatedAt
+model Avaliacao {
+  id           Int      @id @default(autoincrement())
+  star         Float
+  descricao    String
+  servicoId    Int
+  usuarioId    Int
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+  servico      Servico  @relation(fields: [servicoId], references: [id])
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id])
 }
-//tabela preco serviço
-model Preco{
-  id            Int           @id @default(autoincrement()) // Chave primária
-  nomeservico   String
-  precificacao  Float
-  servicoId     Int
-  servico       Servico @relation(fields: [servicoId], references: [id])
-  criadoEm      DateTime      @default(now())
-  atualizadoEm  DateTime @updatedAt
+
+model Preco {
+  id           Int      @id @default(autoincrement())
+  nomeservico  String
+  precificacao Float
+  servicoId    Int
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+  servico      Servico  @relation(fields: [servicoId], references: [id])
 }

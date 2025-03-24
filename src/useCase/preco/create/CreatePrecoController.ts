@@ -22,6 +22,28 @@ class CreatePrecoController {
     }
   }
 
+// Método para buscar todos os preços
+async getAllPreco(req: Request, res: Response) {
+  try {
+    const precos = await CreatePrecoModel.getAllPrecoModel();
+
+    if (precos.length === 0) {
+      return res.status(404).json({
+        error: true,
+        message: "Nenhum preço encontrado.",
+      });
+    }
+
+    return res.status(200).json(precos);  // Retorna todos os preços
+  } catch (error) {
+    console.error("Erro ao buscar todos os preços:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Erro ao buscar os preços. Tente novamente mais tarde.",
+    });
+  }
+}
+
   // Método para atualizar um preço
   async updatePreco(req: Request, res: Response) {
     const { id } = req.params;
