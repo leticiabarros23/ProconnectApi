@@ -1,8 +1,9 @@
-// import express from 'express';
-// import CreateLoginController from "../useCase/login/create/CreateLoginController";
+import { Router } from "express";
+import AuthController from "../useCase/login/AuthController";
 
-// const authRoutes = express.Router();
+const router = Router();
 
-// authRoutes.post("/login", CreateLoginController.login);
+// rota de login
+router.post("/login", AuthController.login);
 
-// export default authRoutes;
+export default router;
