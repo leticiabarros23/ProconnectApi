@@ -5,14 +5,16 @@ class CreateUsuarioModel {
   async createUsuarioModel(
     nome: string,
     email: string,
-    telefone: string
+    telefone: string,
+    senha: string
   ) {
     try {
       const usuario = await prisma.usuario.create({
         data: {
           nome: nome,
           email: email,
-          telefone: telefone
+          telefone: telefone,
+          senha: senha
         },
       });
 
@@ -53,7 +55,8 @@ class CreateUsuarioModel {
     id: number,
     nome: string,
     email: string,
-    telefone: string
+    telefone: string,
+    senha: string
   ) {
     try {
       const usuario = await prisma.usuario.update({
@@ -61,7 +64,8 @@ class CreateUsuarioModel {
         data: {
           nome: nome,
           email: email,
-          telefone: telefone
+          telefone: telefone,
+          senha: senha
         },
       });
 
@@ -71,6 +75,6 @@ class CreateUsuarioModel {
       throw new Error("Erro ao atualizar profissional no banco de dados");
     }
   }
-} // ✅ Aqui está a chave que estava faltando!
+}
 
 export default new CreateUsuarioModel();
