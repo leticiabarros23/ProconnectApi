@@ -2,16 +2,15 @@ import { Request, Response } from "express";
 import CreateServicoModel from "./CreateServicoModel";
 
 class CreateServicoController {
-  // Método para criar um serviço com localização e preços
   async createServico(req: Request, res: Response) {
     const {
       nomeNegocio,
       descricao,
       preco,
       categoriaId,
-      usuarioId,
       localizacao
     } = req.body;
+    const usuarioId = req.user!.id;
 
     try {
       const servico = await CreateServicoModel.createServicoModel(
@@ -33,7 +32,6 @@ class CreateServicoController {
     }
   }
 
-  // Método para buscar todos os serviços
   async getAllServico(req: Request, res: Response) {
     try {
       const servicos = await CreateServicoModel.getAllServicoModel();
@@ -55,12 +53,11 @@ class CreateServicoController {
     }
   }
 
-  // Método para deletar um serviço
   async deleteServico(req: Request, res: Response) {
-    const { id } = req.params;
+    const id = Number(req.params.id);
 
     try {
-      const servicoDeletado = await CreateServicoModel.deleteServicoModel(Number(id));
+      const servicoDeletado = await CreateServicoModel.deleteServicoModel(id);
 
       if (!servicoDeletado) {
         return res.status(404).json({
@@ -81,21 +78,20 @@ class CreateServicoController {
     }
   }
 
-  // Método para atualizar um serviço
   async updateServico(req: Request, res: Response) {
-    const { id } = req.params;
+    const id = Number(req.params.id);
     const {
       nomeNegocio,
       preco,
       avaliacao,
       descricao,
-      categoriaId,
-      usuarioId
+      categoriaId
     } = req.body;
+    const usuarioId = req.user!.id;
 
     try {
       const servicoAtualizado = await CreateServicoModel.updateServicoModel(
-        Number(id),
+        id,
         nomeNegocio,
         preco,
         avaliacao,
