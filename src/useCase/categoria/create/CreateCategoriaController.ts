@@ -2,18 +2,14 @@ import { Request, Response } from "express";
 import CreateCategoriaModel from "./CreateCategoriaModel";
 
 class CreateCategoriaController {
-  // Método para criar uma categoria
   async createCategoria(req: Request, res: Response) {
-    // Recebe os dados do body
     const { nomeServico, } = req.body;
 
     try {
-      // Chama o método do model para criar a categoria
       const categoria = await CreateCategoriaModel.createCategoriaModel(
         nomeServico
       );
 
-      // Retorna a categoria criada
       return res.status(201).json(categoria);
     } catch (error) {
       console.error("Erro ao criar categoria:", error);
@@ -24,7 +20,6 @@ class CreateCategoriaController {
     }
   }
 
- // Método para buscar todas as categorias
  async getAllCategoria(req: Request, res: Response) {
   try {
     const categorias = await CreateCategoriaModel.getAllCategoriaModel();
@@ -36,7 +31,7 @@ class CreateCategoriaController {
       });
     }
 
-    return res.status(200).json(categorias);  // Retorna todas as categorias
+    return res.status(200).json(categorias);
   } catch (error) {
     console.error("Erro ao buscar todas as categorias:", error);
     return res.status(500).json({
@@ -45,10 +40,9 @@ class CreateCategoriaController {
     });
   }
 }
-  // Método para atualizar uma categoria
   async updateCategoria(req: Request, res: Response) {
-    const { id } = req.params;  // Recebe o ID da URL
-    const { nomeServico } = req.body;  // Dados para atualização
+    const { id } = req.params;
+    const { nomeServico } = req.body;
 
     try {
       const categoriaAtualizada = await CreateCategoriaModel.updateCategoriaModel(
@@ -63,7 +57,7 @@ class CreateCategoriaController {
         });
       }
 
-      return res.status(200).json(categoriaAtualizada);  // Retorna a categoria atualizada
+      return res.status(200).json(categoriaAtualizada);
     } catch (error) {
       console.error("Erro ao atualizar categoria:", error);
       return res.status(500).json({
@@ -73,9 +67,8 @@ class CreateCategoriaController {
     }
   }
 
-  // Método para deletar uma categoria
   async deleteCategoria(req: Request, res: Response) {
-    const { id } = req.params;  // Recebe o ID da URL
+    const { id } = req.params;
 
     try {
       const categoriaDeletada = await CreateCategoriaModel.deleteCategoriaModel(Number(id));
@@ -89,7 +82,7 @@ class CreateCategoriaController {
 
       return res.status(200).json({
         message: "Categoria deletada com sucesso.",
-      });  // Confirmação de exclusão
+      }); 
     } catch (error) {
       console.error("Erro ao deletar categoria:", error);
       return res.status(500).json({
