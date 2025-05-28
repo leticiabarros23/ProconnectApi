@@ -1,11 +1,27 @@
-import express from 'express';
+import express from "express";
 import CreatePrecoController from "../useCase/preco/create/CreatePrecoController";
+import { authenticate } from "../middlewares/authMiddleware";
 
 const precoRoutes = express.Router();
 
-precoRoutes.post("/preco", CreatePrecoController.createPreco);
 precoRoutes.get("/preco", CreatePrecoController.getAllPreco);
-precoRoutes.put("/preco/:id", CreatePrecoController.updatePreco);
-precoRoutes.delete("/preco/:id", CreatePrecoController.deletePreco);
+
+precoRoutes.post(
+  "/preco",
+  authenticate,
+  CreatePrecoController.createPreco
+);
+
+precoRoutes.put(
+  "/preco/:id",
+  authenticate,
+  CreatePrecoController.updatePreco
+);
+
+precoRoutes.delete(
+  "/preco/:id",
+  authenticate,
+  CreatePrecoController.deletePreco
+);
 
 export default precoRoutes;

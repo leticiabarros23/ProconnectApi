@@ -1,71 +1,46 @@
-import { prisma } from "../../../lib/prisma"; 
+import { prisma } from "../../../lib/prisma";
+
 class CreateServicoModel {
   async createServicoModel(
     nomeNegocio: string,
     descricao: string,
-    preco: {
-      nomeservico: string;
-      precificacao: number;
-    }[],
+    preco: { nomeservico: string; precificacao: number }[],
     categoriaId: number,
     usuarioId: number,
-    localizacao?: {
-      numero: string;
-      bairro: string;
-      cidade: string;
-      estado: string;
-    }
+    localizacao?: { numero: string; bairro: string; cidade: string; estado: string }
   ) {
-    return await prisma.servico.create({
+    return prisma.servico.create({
       data: {
         nomeNegocio,
         descricao,
         categoria: { connect: { id: categoriaId } },
         usuario: { connect: { id: usuarioId } },
         localizacao: localizacao
-          ? {
-              create: {
-                numero: localizacao.numero,
-                bairro: localizacao.bairro,
-                cidade: localizacao.cidade,
-                estado: localizacao.estado
-              }
-            }
+          ? { create: { ...localizacao } }
           : undefined,
-        preco: preco && preco.length > 0
-          ? {
-              create: preco.map((item) => ({
-                nomeservico: item.nomeservico,
-                precificacao: item.precificacao
-              }))
-            }
+        preco: preco.length
+          ? { create: preco.map(item => ({ ...item })) }
           : undefined
       },
-      include: {
-        localizacao: true,
-        preco: true,
-        categoria: true,
-        usuario: true
-      }
+      include: { localizacao: true, preco: true, categoria: true, usuario: true }
     });
   }
 
   async getAllServicoModel() {
-    return await prisma.servico.findMany({
-      include: {
-        usuario: true,
-        categoria: true,
-        localizacao: true,
-        preco: true,
-        avaliacao: true
-      }
+    return prisma.servico.findMany({
+      include: { usuario: true, categoria: true, localizacao: true, preco: true, avaliacao: true }
+    });
+  }
+
+  async findServicoById(id: number) {
+    return prisma.servico.findUnique({
+      where: { id },
+      select: { id: true, usuarioId: true }
     });
   }
 
   async deleteServicoModel(id: number) {
-    return await prisma.servico.delete({
-      where: { id }
-    });
+    return prisma.servico.delete({ where: { id } });
   }
 
   async updateServicoModel(
@@ -74,18 +49,16 @@ class CreateServicoModel {
     preco: any,
     avaliacao: any,
     descricao: string,
-    categoriaId: number,
-    usuarioId: number
+    categoriaId: number
   ) {
-    return await prisma.servico.update({
+    return prisma.servico.update({
       where: { id },
       data: {
         nomeNegocio,
         descricao,
         categoria: { connect: { id: categoriaId } },
-        usuario: { connect: { id: usuarioId } }
-        // Atualização de localizacao e preco pode ser adicionada aqui futuramente
-      }
+      },
+      include: { usuario: true, categoria: true, localizacao: true, preco: true, avaliacao: true }
     });
   }
 }
