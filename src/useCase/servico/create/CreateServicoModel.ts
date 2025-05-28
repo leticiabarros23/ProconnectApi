@@ -26,9 +26,25 @@ class CreateServicoModel {
     });
   }
 
-  async getAllServicoModel() {
+  async getAllServicoModel(filtroCidade?: string) {
     return prisma.servico.findMany({
-      include: { usuario: true, categoria: true, localizacao: true, preco: true, avaliacao: true }
+      where: filtroCidade
+        ? {
+            localizacao: {
+              cidade: {
+                contains: filtroCidade,
+                mode: "insensitive",
+              },
+            },
+          }
+        : {},
+      include: {
+        usuario: true,
+        categoria: true,
+        localizacao: true,
+        preco: true,
+        avaliacao: true,
+      },
     });
   }
 

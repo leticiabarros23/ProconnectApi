@@ -4,9 +4,13 @@ import CreateUsuarioModel from "../../usuario/create/CreateUsuarioModel";
 
 class CreateServicoController {
   async getAllServico(req: Request, res: Response) {
+    const filtroCidade = typeof req.query.cidade === "string"
+      ? req.query.cidade
+      : undefined;
+
     try {
-      const servicos = await CreateServicoModel.getAllServicoModel();
-      if (!servicos.length) {
+      const servicos = await CreateServicoModel.getAllServicoModel(filtroCidade);
+      if (servicos.length === 0) {
         return res.status(404).json({ error: true, message: "Nenhum serviço encontrado." });
       }
       return res.status(200).json(servicos);
