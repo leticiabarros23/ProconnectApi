@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import CreateServicoModel from "./CreateServicoModel";
+import CreateUsuarioModel from "../../usuario/create/CreateUsuarioModel";
 
 class CreateServicoController {
   async getAllServico(req: Request, res: Response) {
@@ -16,17 +17,38 @@ class CreateServicoController {
   }
 
   async createServico(req: Request, res: Response) {
-    const { nomeNegocio, descricao, preco, categoriaId, localizacao } = req.body;
+    const { nomeNegocio, descricao, preco, categoriaId } = req.body;
     const usuarioId = req.user!.id;
+
+    const usuario = await CreateUsuarioModel.getUsuarioModel(usuarioId);
+    if (!usuario) {
+      return res
+        .status(404)
+        .json({ error: true, message: "Usuário não encontrado." });
+    }
+
+    const localizacaoPayload = {
+      numero: usuario.endereco,
+      bairro: "",
+      cidade: usuario.cidade,
+      estado: usuario.estado,
+    };
 
     try {
       const serv = await CreateServicoModel.createServicoModel(
-        nomeNegocio, descricao, preco, categoriaId, usuarioId, localizacao
+        nomeNegocio,
+        descricao,
+        preco,
+        categoriaId,
+        usuarioId,
+        localizacaoPayload
       );
       return res.status(201).json(serv);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Erro ao criar serviço:", err);
-      return res.status(500).json({ error: true, message: "Erro ao criar serviço." });
+      return res
+        .status(500)
+        .json({ error: true, message: "Erro ao criar serviço." });
     }
   }
 

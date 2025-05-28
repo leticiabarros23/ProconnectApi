@@ -1,13 +1,10 @@
-// CreateUsuarioController.ts
 import { Request, Response } from "express";
 import CreateUsuarioModel from "./CreateUsuarioModel";
 
 class CreateUsuarioController {
-  // Cria um novo usuário
   async createUsuario(req: Request, res: Response) {
     const { nome, email, telefone, estado, cidade, endereco, senha } = req.body;
 
-    // Validação básica
     if (!nome || !email || !telefone || !estado || !cidade || !endereco || !senha) {
       return res
         .status(400)
@@ -34,7 +31,6 @@ class CreateUsuarioController {
     }
   }
 
-  // Busca usuário autenticado
   async getUsuario(req: Request, res: Response) {
     const idParam = Number(req.params.id);
     const userId = req.user?.id;
@@ -51,7 +47,6 @@ class CreateUsuarioController {
     }
   }
 
-  // Atualiza dados do usuário
   async updateUsuario(req: Request, res: Response) {
     const idParam = Number(req.params.id);
     const userId = req.user?.id;
@@ -78,7 +73,6 @@ class CreateUsuarioController {
     }
   }
 
-  // Deleta conta do usuário
   async deleteUsuario(req: Request, res: Response) {
     const idParam = Number(req.params.id);
     const userId = req.user?.id;
