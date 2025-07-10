@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import AuthModel from "./AuthModel";
-import { sign } from "jsonwebtoken/promises";
+import { sign } from "jsonwebtoken";
 
 import type { StringValue } from "ms";
 

@@ -1,53 +1,31 @@
 import { prisma } from "../../../lib/prisma";
 
 class CreateUsuarioModel {
-  // Método para criar um profissional no banco de dados
   async createUsuarioModel(
     nome: string,
     email: string,
     telefone: string,
+    estado: string,
+    cidade: string,
+    endereco: string,
     senha: string
   ) {
     try {
-      const usuario = await prisma.usuario.create({
-        data: {
-          nome: nome,
-          email: email,
-          telefone: telefone,
-          senha: senha
-        },
+      return await prisma.usuario.create({
+        data: { nome, email, telefone, estado, cidade, endereco, senha },
       });
-
-      return usuario;
     } catch (error) {
-      console.error("Erro no Model ao criar profissional:", error);
-      throw new Error("Erro ao salvar profissional no banco de dados");
+      console.error("Erro no Model ao criar usuário:", error);
+      throw new Error("Erro ao salvar usuário no banco de dados");
     }
   }
 
   async getUsuarioModel(id: number) {
     try {
-      const usuario = await prisma.usuario.findUnique({
-        where: { id: id }
-      });
-
-      return usuario;
+      return await prisma.usuario.findUnique({ where: { id } });
     } catch (error) {
-      console.error("Erro no Model ao buscar profissional:", error);
-      throw new Error("Erro ao buscar profissional no banco de dados");
-    }
-  }
-
-  async deleteUsuarioModel(id: number) {
-    try {
-      const usuario = await prisma.usuario.delete({
-        where: { id: id },
-      });
-
-      return usuario;
-    } catch (error) {
-      console.error("Erro no Model ao deletar profissional:", error);
-      throw new Error("Erro ao deletar profissional no banco de dados");
+      console.error("Erro no Model ao buscar usuário:", error);
+      throw new Error("Erro ao buscar usuário no banco de dados");
     }
   }
 
@@ -56,23 +34,28 @@ class CreateUsuarioModel {
     nome: string,
     email: string,
     telefone: string,
+    estado: string,
+    cidade: string,
+    endereco: string,
     senha: string
   ) {
     try {
-      const usuario = await prisma.usuario.update({
-        where: { id: id },
-        data: {
-          nome: nome,
-          email: email,
-          telefone: telefone,
-          senha: senha
-        },
+      return await prisma.usuario.update({
+        where: { id },
+        data: { nome, email, telefone, estado, cidade, endereco, senha },
       });
-
-      return usuario;
     } catch (error) {
-      console.error("Erro no Model ao atualizar profissional:", error);
-      throw new Error("Erro ao atualizar profissional no banco de dados");
+      console.error("Erro no Model ao atualizar usuário:", error);
+      throw new Error("Erro ao atualizar usuário no banco de dados");
+    }
+  }
+
+  async deleteUsuarioModel(id: number) {
+    try {
+      return await prisma.usuario.delete({ where: { id } });
+    } catch (error) {
+      console.error("Erro no Model ao deletar usuário:", error);
+      throw new Error("Erro ao deletar usuário no banco de dados");
     }
   }
 }

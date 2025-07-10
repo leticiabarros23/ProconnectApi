@@ -1,12 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { verify } from "jsonwebtoken/promises";
-
-interface TokenPayload {
-  sub: number;
-  email: string;
-  iat: number;
-  exp: number;
-}
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 export async function authenticate(
   req: Request,
@@ -24,13 +17,18 @@ export async function authenticate(
   }
 
   try {
-    const payload = (await verify(
-      token,
-      process.env.JWT_SECRET!
-    )) as TokenPayload;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
 
-    req.user = { id: payload.sub, email: payload.email };
-    return next();
+    if (
+      typeof decoded !== "object" ||
+      typeof decoded.sub !== "number" ||
+      typeof decoded.email !== "string"
+    ) {
+      throw new Error();
+    }
+
+    req.user = { id: decoded.sub, email: decoded.email };
+    next();
   } catch {
     return res.status(401).json({ error: "Token inválido ou expirado." });
   }

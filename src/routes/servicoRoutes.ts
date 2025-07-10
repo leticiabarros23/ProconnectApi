@@ -1,11 +1,27 @@
-import express from 'express';
+import express from "express";
 import CreateServicoController from "../useCase/servico/create/CreateServicoController";
+import { authenticate } from "../middlewares/authMiddleware";
 
 const servicoRoutes = express.Router();
 
-servicoRoutes.post("/servico",CreateServicoController.createServico);
 servicoRoutes.get("/servico", CreateServicoController.getAllServico);
-servicoRoutes.put("/servico/:id", CreateServicoController.updateServico);
-servicoRoutes.delete("/servico/:id", CreateServicoController.deleteServico);
+
+servicoRoutes.post(
+  "/servico",
+  authenticate,
+  CreateServicoController.createServico
+);
+
+servicoRoutes.put(
+  "/servico/:id",
+  authenticate,
+  CreateServicoController.updateServico
+);
+
+servicoRoutes.delete(
+  "/servico/:id",
+  authenticate,
+  CreateServicoController.deleteServico
+);
 
 export default servicoRoutes;

@@ -13,6 +13,9 @@ model Usuario {
   nome      String
   email     String      @unique
   telefone  String
+  estado    String
+  cidade    String
+  endereco  String
   senha     String
   criadoEm  DateTime    @default(now())
   avaliacao Avaliacao[]
