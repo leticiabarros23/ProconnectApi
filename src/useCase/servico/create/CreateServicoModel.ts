@@ -48,12 +48,19 @@ class CreateServicoModel {
     });
   }
 
-  async findServicoById(id: number) {
-    return prisma.servico.findUnique({
-      where: { id },
-      select: { id: true, usuarioId: true }
-    });
-  }
+ async findServicoById(id: number) {
+  return prisma.servico.findUnique({
+    where: { id },
+    include: {
+      usuario: true,
+      categoria: true,
+      localizacao: true,
+      preco: true,
+      avaliacao: true, // só se você usa
+    },
+  });
+}
+
 
   async deleteServicoModel(id: number) {
     return prisma.servico.delete({ where: { id } });

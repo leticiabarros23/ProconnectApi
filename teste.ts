@@ -1,29 +1,20 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
-  // Criação de um novo usuário
-  const novoUsuario = await prisma.usuario.create({
-    data: {
-      nome: 'João da Silva',
-      email: 'joao@example.com',
-      telefone: '11999999999',
-      senha: 'senha123'
-    }
-  })
+  await prisma.categoria.createMany({
+    data: [
+      { nomeServico: "Beleza" },
+      { nomeServico: "Informática" },
+      { nomeServico: "Saúde" },
+    ],
+    skipDuplicates: true,
+  });
 
-  console.log('Usuário criado:', novoUsuario)
-
-  // Consulta de todos os usuários
-  const usuarios = await prisma.usuario.findMany()
-  console.log('Todos os usuários:', usuarios)
+  console.log("Categorias criadas com sucesso!");
 }
 
 main()
-  .catch((e) => {
-    console.error(e)
-  })
-  .finally(async () => {
-    await prisma.$disconnect()
-  })
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());

@@ -3,7 +3,7 @@ import CreateServicoModel from "./CreateServicoModel";
 import CreateUsuarioModel from "../../usuario/create/CreateUsuarioModel";
 
 class CreateServicoController {
-  async getAllServico(req: Request, res: Response) {
+  static async getAllServico(req: Request, res: Response) {
     const filtroCidade = typeof req.query.cidade === "string"
       ? req.query.cidade
       : undefined;
@@ -20,7 +20,7 @@ class CreateServicoController {
     }
   }
 
-  async createServico(req: Request, res: Response) {
+  static async createServico(req: Request, res: Response) {
     const { nomeNegocio, descricao, preco, categoriaId } = req.body;
     const usuarioId = req.user!.id;
 
@@ -56,7 +56,7 @@ class CreateServicoController {
     }
   }
 
-  async updateServico(req: Request, res: Response) {
+  static async updateServico(req: Request, res: Response) {
     const id = Number(req.params.id);
     const usuarioId = req.user!.id;
     const { nomeNegocio, preco, avaliacao, descricao, categoriaId } = req.body;
@@ -80,7 +80,7 @@ class CreateServicoController {
     }
   }
 
-  async deleteServico(req: Request, res: Response) {
+  static async deleteServico(req: Request, res: Response) {
     const id = Number(req.params.id);
     const usuarioId = req.user!.id;
 
@@ -100,6 +100,22 @@ class CreateServicoController {
       return res.status(500).json({ error: true, message: "Erro ao deletar serviço." });
     }
   }
+static async getServicoById(req: Request, res: Response) {
+  const { id } = req.params;
+
+  if (!id || isNaN(Number(id))) {
+    return res.status(400).json({ message: "ID inválido ou ausente." });
+  }
+
+  const servico = await CreateServicoModel.findServicoById(Number(id));
+
+  if (!servico) {
+    return res.status(404).json({ message: "Serviço não encontrado." });
+  }
+
+  return res.json(servico);
+}
 }
 
-export default new CreateServicoController();
+
+export default CreateServicoController;
