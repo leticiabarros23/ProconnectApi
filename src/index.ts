@@ -20,7 +20,7 @@ const corsOptions = {
     "https://pro-connect-git-main-leticias-projects-caf83cc5.vercel.app",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://pro-connect-olive.vercel.app"
+    "https://pro-connect-cc64.vercel.app/",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
