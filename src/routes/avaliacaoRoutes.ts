@@ -3,7 +3,14 @@ import CreateAvaliacaoController from "../useCase/avaliacao/create/CreateAvaliac
 
 const avaliacaoRoutes = express.Router();
 
-avaliacaoRoutes.post("/avaliacao", CreateAvaliacaoController.createAvaliacao);
-avaliacaoRoutes.get("/avaliacao/:id", CreateAvaliacaoController.getAvaliacoes);
+avaliacaoRoutes.post(
+    "/avaliacao", 
+    CreateAvaliacaoController.createAvaliacao
+);
+
+avaliacaoRoutes.get(
+    "/avaliacao/:id", 
+    CreateAvaliacaoController.getAvaliacoes
+);
 
 export default avaliacaoRoutes;
