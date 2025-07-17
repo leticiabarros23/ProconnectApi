@@ -17,11 +17,12 @@ const port = process.env.PORT || 3333
 
 const corsOptions = {
   origin: [
+    "https://pro-connect-cc64.vercel.app", // EM PRODUÇÂO
     "https://pro-connect-git-main-leticias-projects-caf83cc5.vercel.app",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://pro-connect-cc64.vercel.app/",
-  ],
+    "https://pro-connect-olive.vercel.app" 
+   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
