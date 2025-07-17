@@ -20,8 +20,7 @@ const corsOptions = {
     "https://pro-connect-cc64.vercel.app", // EM PRODUÇÂO
     "https://pro-connect-git-main-leticias-projects-caf83cc5.vercel.app",
     "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "https://pro-connect-olive.vercel.app" 
+    "http://127.0.0.1:3000"
    ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -50,13 +49,13 @@ app.get('/',(req,res)=>{
   res.status(200).send('<h1>Está Online</h1>')
 })
 
-app.use((error:Error,request:Request,response:Response,next:NextFunction)=>{
-  response.json({
-    status:"error",
-    message:error.message
+app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error("Erro interno:", error); // 🔥 mostra o erro completo no terminal
+  res.status(500).json({
+    status: "error",
+    message: error.message,
   });
-  next()
-})
+});
 
 app.listen(port,()=>{
   console.log(`Aplicação online na porta http://localhost:${port}`)
