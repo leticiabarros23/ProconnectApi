@@ -15,16 +15,24 @@ dotenv.config();
 const app = express()
 const port = process.env.PORT || 3333
 
-const corsOptions = {
-  origin: [
+const allowedOrigins = [
     "https://pro-connect-cc64.vercel.app", // EM PRODUÇÂO
-    "https://pro-connect-git-main-leticias-projects-caf83cc5.vercel.app",
+    // "https://pro-connect-git-main-leticias-projects-caf83cc5.vercel.app",
     "http://localhost:3000",
     "http://127.0.0.1:3000"
-   ],
+   ];
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
+  credentials: true
 };
 
 app.use(cors(corsOptions));
