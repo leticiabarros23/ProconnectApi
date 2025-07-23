@@ -1,6 +1,13 @@
 import { Request, Response } from "express";
 import CreateServicoModel from "./CreateServicoModel";
 import CreateUsuarioModel from "../../usuario/create/CreateUsuarioModel";
+import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET
+})
 
 class CreateServicoController {
   static async getAllServico(req: Request, res: Response) {
@@ -21,7 +28,7 @@ class CreateServicoController {
   }
 
   static async createServico(req: Request, res: Response) {
-    const { nomeNegocio, descricao, preco, categoriaId } = req.body;
+    const { nomeNegocio, descricao, preco, categoriaId, imagem } = req.body;
     const usuarioId = req.user!.id;
 
     const usuario = await CreateUsuarioModel.getUsuarioModel(usuarioId);
@@ -39,12 +46,25 @@ class CreateServicoController {
     };
 
     try {
+      // Upload da imagem (base64) no Cloudinary
+      let imagemUrl = "";
+      if (imagem && imagem.startsWith("data:image")) {
+        const uploadResult: UploadApiResponse = await cloudinary.uploader.upload(imagem, {
+          folder: "servicos",
+          use_filename: true,
+          unique_filename: false,
+        });
+        imagemUrl = uploadResult.secure_url;
+        console.log("Imagem salva no Cloudinary:", imagemUrl); // opcional
+      }
+
       const serv = await CreateServicoModel.createServicoModel(
         nomeNegocio,
         descricao,
         preco,
         categoriaId,
         usuarioId,
+        imagemUrl, 
         localizacaoPayload
       );
       return res.status(201).json(serv);
@@ -59,7 +79,7 @@ class CreateServicoController {
   static async updateServico(req: Request, res: Response) {
     const id = Number(req.params.id);
     const usuarioId = req.user!.id;
-    const { nomeNegocio, preco, avaliacao, descricao, categoriaId } = req.body;
+    const { nomeNegocio, preco, avaliacao, descricao, categoriaId, imagem } = req.body;
 
     const serv = await CreateServicoModel.findServicoById(id);
     if (!serv) {
@@ -71,7 +91,7 @@ class CreateServicoController {
 
     try {
       const updated = await CreateServicoModel.updateServicoModel(
-        id, nomeNegocio, preco, avaliacao, descricao, categoriaId
+        id, nomeNegocio, preco, avaliacao, descricao, categoriaId, imagem
       );
       return res.status(200).json(updated);
     } catch (err) {
@@ -114,8 +134,7 @@ static async getServicoById(req: Request, res: Response) {
   }
 
   return res.json(servico);
+  }
 }
-}
-
 
 export default CreateServicoController;

@@ -7,12 +7,14 @@ class CreateServicoModel {
     preco: { nomeservico: string; precificacao: number }[],
     categoriaId: number,
     usuarioId: number,
+    imagem: string,
     localizacao?: { numero: string; bairro: string; cidade: string; estado: string }
   ) {
     return prisma.servico.create({
       data: {
         nomeNegocio,
         descricao,
+        imagem,
         categoria: { connect: { id: categoriaId } },
         usuario: { connect: { id: usuarioId } },
         localizacao: localizacao
@@ -72,13 +74,15 @@ class CreateServicoModel {
     preco: any,
     avaliacao: any,
     descricao: string,
-    categoriaId: number
+    categoriaId: number,
+    imagem: string
   ) {
     return prisma.servico.update({
       where: { id },
       data: {
         nomeNegocio,
         descricao,
+        imagem,
         categoria: { connect: { id: categoriaId } },
       },
       include: { usuario: true, categoria: true, localizacao: true, preco: true, avaliacao: true }

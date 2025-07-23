@@ -36,6 +36,7 @@ model Servico {
   id            Int          @id @default(autoincrement())
   nomeNegocio   String
   descricao     String
+  imagem        String
   usuarioId     Int
   categoriaId   Int?
   localizacaoId Int?
