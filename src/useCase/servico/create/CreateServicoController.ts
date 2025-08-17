@@ -28,7 +28,7 @@ class CreateServicoController {
   }
 
   static async createServico(req: Request, res: Response) {
-    const { nomeNegocio, descricao, preco, categoriaId, imagem } = req.body;
+    const { nomeNegocio, descricao, preco, categoriaId, imagem, extensaoDoArquivo } = req.body;
     const usuarioId = req.user!.id;
 
     const usuario = await CreateUsuarioModel.getUsuarioModel(usuarioId);
@@ -48,8 +48,9 @@ class CreateServicoController {
     try {
       // Upload da imagem (base64) no Cloudinary
       let imagemUrl = "";
+      console.log("Imagem recebida:", imagem);
       if (imagem && imagem.startsWith("data:image")) {
-        const uploadResult: UploadApiResponse = await cloudinary.uploader.upload(imagem, {
+        const uploadResult: UploadApiResponse = await cloudinary.uploader.upload(`data:image/${extensaoDoArquivo};base64,${imagem}`, {
           folder: "servicos",
           use_filename: true,
           unique_filename: false,

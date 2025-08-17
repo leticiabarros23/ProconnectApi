@@ -16,7 +16,7 @@ const app = express()
 const port = process.env.PORT || 3333
 
 const allowedOrigins = [
-    "https://pro-connect-cc64.vercel.app", // EM PRODUÇÂO
+    "https://pro-connect-ten.vercel.app", // EM PRODUÇÂO
     // "https://pro-connect-git-main-leticias-projects-caf83cc5.vercel.app",
     "http://localhost:3000",
     "http://127.0.0.1:3000"
