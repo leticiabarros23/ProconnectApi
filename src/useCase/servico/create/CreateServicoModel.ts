@@ -8,7 +8,6 @@ class CreateServicoModel {
     preco: { nomeservico: string; precificacao: number }[],
     categoriaId: number,
     usuarioId: number,
-    // 🔥 imagem removida
     localizacao?: { numero: string; bairro: string; cidade: string; estado: string }
   ) {
     return prisma.servico.create({
@@ -54,21 +53,19 @@ class CreateServicoModel {
     });
   }
 
-  async deleteServicoModel(id: number) {
-    return prisma.servico.delete({ where: { id } });
-  }
-
-  // Adicione este novo método dentro da classe CreateServicoModel
-async getServicosByUsuarioId(usuarioId: number) {
+  async getServicosByUsuarioId(usuarioId: number) {
     return prisma.servico.findMany({
       where: { usuarioId },
       include: {
         categoria: true,
         preco: true,
+        avaliacao: true, // Adicionado para consistência
+        localizacao: true, // Adicionado para consistência
       },
     });
-}
-async updateServico(id: number, usuarioId: number, data: any) {
+  }
+
+  async updateServico(id: number, usuarioId: number, data: any) {
     const servico = await prisma.servico.findUnique({ where: { id } });
 
     if (!servico) {
@@ -82,9 +79,9 @@ async updateServico(id: number, usuarioId: number, data: any) {
       where: { id },
       data,
     });
-}
+  }
 
-async deleteServico(id: number, usuarioId: number) {
+  async deleteServico(id: number, usuarioId: number) {
     const servico = await prisma.servico.findUnique({ where: { id } });
 
     if (!servico) {
@@ -94,10 +91,19 @@ async deleteServico(id: number, usuarioId: number) {
       throw new Error("Este serviço não pertence a você.");
     }
 
-    return prisma.servico.delete({
-      where: { id },
-    });
-}
+    // Executa a exclusão de registros relacionados e do serviço em si dentro de uma transação
+    return prisma.$transaction([
+      prisma.preco.deleteMany({
+        where: { servicoId: id },
+      }),
+      prisma.avaliacao.deleteMany({
+        where: { servicoId: id },
+      }),
+      prisma.servico.delete({
+        where: { id },
+      }),
+    ]);
+  }
 }
 
 export default new CreateServicoModel();
