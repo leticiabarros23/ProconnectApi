@@ -15,7 +15,6 @@ class CreateUsuarioModel {
         data: { nome, email, telefone, estado, cidade, endereco, senha },
       });
     } catch(error: any) {
-      // console.error("Erro no Model ao criar usuário:", error);
       // throw new Error("Erro ao salvar usuário no banco de dados");
        console.error("Erro no Model ao criar usuário:", error);
        throw error;
