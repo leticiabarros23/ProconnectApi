@@ -32,4 +32,18 @@ servicoRoutes.delete(
   CreateServicoController.deleteServico
 );
 
+// ROTA ADICIONADA PARA ATUALIZAR
+servicoRoutes.put(
+  "/servico/:id",
+  authenticate,
+  CreateServicoController.updateServico
+);
+
+// ROTA ADICIONADA PARA DELETAR
+servicoRoutes.delete(
+  "/servico/:id",
+  authenticate,
+  CreateServicoController.deleteServico
+);
+
 export default servicoRoutes;

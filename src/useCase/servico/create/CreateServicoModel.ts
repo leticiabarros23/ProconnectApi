@@ -58,26 +58,6 @@ class CreateServicoModel {
     return prisma.servico.delete({ where: { id } });
   }
 
-  async updateServicoModel(
-    id: number,
-    nomeNegocio: string,
-    preco: any,
-    avaliacao: any,
-    descricao: string,
-    categoriaId: number
-    // 🔥 imagem removida daqui também
-  ) {
-    return prisma.servico.update({
-      where: { id },
-      data: {
-        nomeNegocio,
-        descricao,
-        // 🔥 sem imagem
-        categoria: { connect: { id: categoriaId } },
-      },
-      include: { usuario: true, categoria: true, localizacao: true, preco: true, avaliacao: true },
-    });
-  }
   // Adicione este novo método dentro da classe CreateServicoModel
 async getServicosByUsuarioId(usuarioId: number) {
     return prisma.servico.findMany({
@@ -86,6 +66,36 @@ async getServicosByUsuarioId(usuarioId: number) {
         categoria: true,
         preco: true,
       },
+    });
+}
+async updateServico(id: number, usuarioId: number, data: any) {
+    const servico = await prisma.servico.findUnique({ where: { id } });
+
+    if (!servico) {
+      throw new Error("Serviço não encontrado.");
+    }
+    if (servico.usuarioId !== usuarioId) {
+      throw new Error("Este serviço não pertence a você.");
+    }
+
+    return prisma.servico.update({
+      where: { id },
+      data,
+    });
+}
+
+async deleteServico(id: number, usuarioId: number) {
+    const servico = await prisma.servico.findUnique({ where: { id } });
+
+    if (!servico) {
+      throw new Error("Serviço não encontrado.");
+    }
+    if (servico.usuarioId !== usuarioId) {
+      throw new Error("Este serviço não pertence a você.");
+    }
+
+    return prisma.servico.delete({
+      where: { id },
     });
 }
 }

@@ -98,51 +98,40 @@ class CreateServicoController {
     return res.json(servico);
   }
 
-  static async updateServico(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    const usuarioId = req.user!.id;
-    const { nomeNegocio, preco, avaliacao, descricao, categoriaId } = req.body;
+static async updateServico(req: Request, res: Response) {
+  const { id } = req.params;
+  const servicoData = req.body;
+  const usuarioId = req.user!.id;
 
-    const serv = await CreateServicoModel.findServicoById(id);
-    if (!serv) {
-      return res.status(404).json({ error: true, message: "Serviço não encontrado." });
+  try {
+    const servico = await CreateServicoModel.updateServico(Number(id), usuarioId, servicoData);
+    return res.status(200).json(servico);
+  } catch (err: any) {
+    if (err.message.includes("encontrado") || err.message.includes("pertence")) {
+      return res.status(404).json({ error: true, message: err.message });
     }
-    if (serv.usuarioId !== usuarioId) {
-      return res.status(403).json({ error: true, message: "Permissão negada." });
-    }
-
-    try {
-      const updated = await CreateServicoModel.updateServicoModel(
-        id, nomeNegocio, preco, avaliacao, descricao, categoriaId
-        // 🔥 sem imagem
-      );
-      return res.status(200).json(updated);
-    } catch (err) {
-      console.error("Erro ao atualizar serviço:", err);
-      return res.status(500).json({ error: true, message: "Erro ao atualizar serviço." });
-    }
+    console.error("Erro ao atualizar serviço:", err);
+    return res.status(500).json({ error: true, message: "Erro interno do servidor." });
   }
+}
+
 
   static async deleteServico(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    const usuarioId = req.user!.id;
+  const { id } = req.params;
+  const usuarioId = req.user!.id;
 
-    const serv = await CreateServicoModel.findServicoById(id);
-    if (!serv) {
-      return res.status(404).json({ error: true, message: "Serviço não encontrado." });
+  try {
+    await CreateServicoModel.deleteServico(Number(id), usuarioId);
+    return res.status(204).send(); // No Content
+  } catch (err: any) {
+    if (err.message.includes("encontrado") || err.message.includes("pertence")) {
+      return res.status(404).json({ error: true, message: err.message });
     }
-    if (serv.usuarioId !== usuarioId) {
-      return res.status(403).json({ error: true, message: "Permissão negada." });
-    }
-
-    try {
-      await CreateServicoModel.deleteServicoModel(id);
-      return res.status(200).json({ message: "Serviço deletado com sucesso." });
-    } catch (err) {
-      console.error("Erro ao deletar serviço:", err);
-      return res.status(500).json({ error: true, message: "Erro ao deletar serviço." });
-    }
+    console.error("Erro ao deletar serviço:", err);
+    return res.status(500).json({ error: true, message: "Erro interno do servidor." });
   }
+}
+
   // Adicione este novo método dentro da classe CreateServicoController
 static async getServicosByUsuario(req: Request, res: Response) {
     const usuarioId = req.user!.id;
@@ -168,7 +157,7 @@ async getServicosByUsuarioId(usuarioId: number) {
         preco: true,
       },
     });
-}
+  }
 }
 
 export default CreateServicoController;
