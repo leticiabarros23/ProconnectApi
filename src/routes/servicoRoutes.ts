@@ -15,7 +15,7 @@ servicoRoutes.get(
 );
 
 servicoRoutes.post(
-"/servico",
+  "/servico",
   authenticate,
   CreateServicoController.createServico
 );

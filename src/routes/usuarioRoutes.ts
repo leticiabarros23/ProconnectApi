@@ -10,6 +10,12 @@ usuarioRoutes.post(
 );
 
 usuarioRoutes.get(
+  "/usuario/me", 
+  authenticate, 
+  CreateUsuarioController.me
+);
+
+usuarioRoutes.get(
   "/usuario/:id", 
   authenticate, 
   CreateUsuarioController.getUsuario

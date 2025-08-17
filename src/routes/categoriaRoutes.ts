@@ -9,21 +9,26 @@ categoriaRoutes.get(
   CreateCategoriaController.getAllCategoria
 );
 
+categoriaRoutes.get(
+  "/categoria/:id",
+  CreateCategoriaController.getCategoriaById
+);
+
 categoriaRoutes.post(
-  "/categoria",
-  authenticate,
+  "/categoria", 
+  authenticate, 
   CreateCategoriaController.createCategoria
 );
 
 categoriaRoutes.put(
-  "/categoria/:id",
-  authenticate,
+  "/categoria/:id", 
+  authenticate, 
   CreateCategoriaController.updateCategoria
 );
 
 categoriaRoutes.delete(
-  "/categoria/:id",
-  authenticate,
+  "/categoria/:id", 
+  authenticate, 
   CreateCategoriaController.deleteCategoria
 );
 

@@ -31,6 +31,13 @@ class CreateUsuarioController {
     }
   }
 
+  async me(req: Request, res: Response) {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: true, message: "Não autenticado." });
+    const usuario = await CreateUsuarioModel.getUsuarioModel(userId);
+    return res.json(usuario);
+  }
+
   async getUsuario(req: Request, res: Response) {
     const idParam = Number(req.params.id);
     const userId = req.user?.id;

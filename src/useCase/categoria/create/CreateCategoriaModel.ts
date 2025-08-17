@@ -3,13 +3,9 @@ import { prisma } from "../../../lib/prisma";
 class CreateCategoriaModel {
   async createCategoriaModel(nomeServico: string) {
     try {
-      const categoria = await prisma.categoria.create({
-        data: {
-          nomeServico
-        }
+      return await prisma.categoria.create({
+        data: { nomeServico },
       });
-
-      return categoria;
     } catch (error) {
       console.error("Erro no Model ao criar categoria:", error);
       throw new Error("Erro ao salvar categoria no banco de dados");
@@ -18,24 +14,28 @@ class CreateCategoriaModel {
 
   async getAllCategoriaModel() {
     try {
-      const categorias = await prisma.categoria.findMany();
-      return categorias;
+      return await prisma.categoria.findMany();
     } catch (error) {
       console.error("Erro ao buscar todas as categorias:", error);
       throw new Error("Erro ao buscar categorias no banco de dados");
     }
   }
 
+  async getCategoriaByIdModel(id: number) {
+    try {
+      return await prisma.categoria.findUnique({ where: { id } });
+    } catch (error) {
+      console.error("Erro ao buscar categoria por ID:", error);
+      throw new Error("Erro ao buscar categoria no banco de dados");
+    }
+  }
+
   async updateCategoriaModel(id: number, nomeServico: string) {
     try {
-      const categoriaAtualizada = await prisma.categoria.update({
-        where: { id: id },
-        data: {
-          nomeServico,
-        },
+      return await prisma.categoria.update({
+        where: { id },
+        data: { nomeServico },
       });
-
-      return categoriaAtualizada;
     } catch (error) {
       console.error("Erro ao atualizar categoria:", error);
       throw new Error("Erro ao atualizar categoria no banco de dados");
@@ -44,11 +44,7 @@ class CreateCategoriaModel {
 
   async deleteCategoriaModel(id: number) {
     try {
-      const categoriaDeletada = await prisma.categoria.delete({
-        where: { id: id },
-      });
-
-      return categoriaDeletada;
+      return await prisma.categoria.delete({ where: { id } });
     } catch (error) {
       console.error("Erro ao deletar categoria:", error);
       throw new Error("Erro ao deletar categoria no banco de dados");
