@@ -143,6 +143,32 @@ class CreateServicoController {
       return res.status(500).json({ error: true, message: "Erro ao deletar serviço." });
     }
   }
+  // Adicione este novo método dentro da classe CreateServicoController
+static async getServicosByUsuario(req: Request, res: Response) {
+    const usuarioId = req.user!.id;
+
+    try {
+      const servicos = await CreateServicoModel.getServicosByUsuarioId(usuarioId);
+      if (!servicos.length) {
+        return res.status(200).json([]); // Retorna array vazio se não houver serviços
+      }
+      return res.status(200).json(servicos);
+    } catch (err) {
+      console.error("Erro ao buscar serviços do usuário:", err);
+      return res.status(500).json({ error: true, message: "Erro ao buscar serviços." });
+    }
+}
+
+// Adicione este novo método dentro da classe CreateServicoModel
+async getServicosByUsuarioId(usuarioId: number) {
+    return prisma.servico.findMany({
+      where: { usuarioId },
+      include: {
+        categoria: true,
+        preco: true,
+      },
+    });
+}
 }
 
 export default CreateServicoController;

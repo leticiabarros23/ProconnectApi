@@ -78,6 +78,16 @@ class CreateServicoModel {
       include: { usuario: true, categoria: true, localizacao: true, preco: true, avaliacao: true },
     });
   }
+  // Adicione este novo método dentro da classe CreateServicoModel
+async getServicosByUsuarioId(usuarioId: number) {
+    return prisma.servico.findMany({
+      where: { usuarioId },
+      include: {
+        categoria: true,
+        preco: true,
+      },
+    });
+}
 }
 
 export default new CreateServicoModel();
