@@ -1,5 +1,5 @@
 import { Servico, Usuario } from "@prisma/client";
-import { prisma } from "../../../lib/prisma";
+import  prisma  from "../../../lib/prisma";
 
 class CreateAvaliacaoModel {
   // Método para criar um avaliaçao no banco de dados

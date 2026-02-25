@@ -1,4 +1,4 @@
-import { prisma } from "../../../lib/prisma";
+import  prisma  from "../../../lib/prisma";
 
 class CreateLocalizacaoModel {
   // Método para criar uma localização no banco de dados

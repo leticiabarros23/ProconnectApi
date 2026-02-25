@@ -1,5 +1,5 @@
 // src/useCase/servico/create/CreateServicoModel.ts
-import { prisma } from "../../../lib/prisma";
+import  prisma  from "../../../lib/prisma";
 
 class CreateServicoModel {
   async createServicoModel(

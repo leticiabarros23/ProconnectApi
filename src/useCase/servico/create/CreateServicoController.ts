@@ -2,8 +2,8 @@
 import { Request, Response } from "express";
 import CreateServicoModel from "./CreateServicoModel";
 import CreateUsuarioModel from "../../usuario/create/CreateUsuarioModel";
-import { Prisma } from "@prisma/client";
-import { prisma } from "../../../lib/prisma";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
+import prisma from "../../../lib/prisma";
 
 class CreateServicoController {
   static async getAllServico(req: Request, res: Response) {
@@ -73,7 +73,7 @@ class CreateServicoController {
     } catch (err: any) {
       console.error("Erro ao criar serviço:", err);
 
-      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    if (err instanceof PrismaClientKnownRequestError) {
         if (err.code === "P2025") {
           return res.status(400).json({ error: true, message: "Registro relacionado não encontrado (categoria/usuário)." });
         }

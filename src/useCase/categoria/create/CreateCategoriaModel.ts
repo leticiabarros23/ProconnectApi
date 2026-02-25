@@ -1,4 +1,4 @@
-import { prisma } from "../../../lib/prisma";
+import  prisma  from "../../../lib/prisma";
 
 class CreateCategoriaModel {
   async createCategoriaModel(nomeServico: string) {
