@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import AuthModel from "./AuthModel";
 import { sign } from "jsonwebtoken";
+import { compare } from "bcryptjs";
 
 import type { StringValue } from "ms";
 
@@ -18,21 +19,36 @@ class AuthController {
 
     try {
       const usuario = await AuthModel.findByEmail(email);
-      if (!usuario || usuario.senha !== senha) {
+
+      if (!usuario) {
         return res
           .status(401)
           .json({ error: true, message: "Credenciais inválidas." });
       }
 
+      const senhaValida = await compare(senha, usuario.senha);
 
-      // retorna Promise<string>
-      const token = await sign(
+      if (!senhaValida) {
+        return res
+          .status(401)
+          .json({ error: true, message: "Credenciais inválidas." });
+      }
+
+      const token = sign(
         { sub: usuario.id, email: usuario.email },
         secret,
         { expiresIn }
       );
 
-      return res.json({ token });
+      return res.json({ 
+        token,
+        user: {
+          id: usuario.id,
+          nome: usuario.nome,
+          email: usuario.email
+        }
+      });
+
     } catch (error) {
       console.error("Erro no AuthController:", error);
       return res

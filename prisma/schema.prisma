@@ -3,10 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
+
 
 model Usuario {
   id        Int         @id @default(autoincrement())
@@ -20,6 +19,7 @@ model Usuario {
   criadoEm  DateTime    @default(now())
   avaliacao Avaliacao[]
   servicos  Servico[]
+  resetTokens ResetToken[]
 }
 
 model Localizacao {
@@ -76,4 +76,13 @@ model Preco {
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
   servico      Servico  @relation(fields: [servicoId], references: [id])
+}
+
+model ResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  usuarioId Int
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
 }

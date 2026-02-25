@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import CreateUsuarioModel from "./CreateUsuarioModel";
+import { hash } from "bcryptjs";
 
 class CreateUsuarioController {
   async createUsuario(req: Request, res: Response) {
     const { nome, email, telefone, estado, cidade, endereco, senha } = req.body;
 
+    // Validação de campos obrigatórios
     if (!nome || !email || !telefone || !estado || !cidade || !endereco || !senha) {
       return res
         .status(400)
@@ -12,6 +14,22 @@ class CreateUsuarioController {
     }
 
     try {
+      // --- VERIFICAÇÃO DE E-MAIL DUPLICADO ---
+      // Verificamos se o e-mail já existe antes de fazer qualquer outra coisa
+      const usuarioJaExiste = await CreateUsuarioModel.findByEmail(email);
+      
+      if (usuarioJaExiste) {
+        return res.status(400).json({ 
+          error: true, 
+          message: "Este e-mail já está cadastrado. Tente fazer login ou recupere sua senha." 
+        });
+      }
+      // ---------------------------------------
+
+      // 1. Gera o hash da senha de forma segura
+      const senhaCriptografada = await hash(senha, 10);
+
+      // 2. Cria o usuário passando a senha já criptografada
       const usuario = await CreateUsuarioModel.createUsuarioModel(
         nome,
         email,
@@ -19,8 +37,9 @@ class CreateUsuarioController {
         estado,
         cidade,
         endereco,
-        senha
+        senhaCriptografada
       );
+
       return res.status(201).json(usuario);
     } catch (error: any) {
       console.error("Erro ao criar usuário:", error);
@@ -62,17 +81,19 @@ class CreateUsuarioController {
     }
 
     const { nome, email, telefone, estado, cidade, endereco, senha } = req.body;
+    
     try {
-      const usuario = await CreateUsuarioModel.updateUsuarioModel(
-        idParam,
-        nome,
-        email,
-        telefone,
-        estado,
-        cidade,
-        endereco,
-        senha
-      );
+      // Criamos um objeto com os dados básicos
+      const dadosParaAtualizar: any = { nome, email, telefone, estado, cidade, endereco };
+
+      // Se o usuário enviou uma senha nova, gera um novo hash
+      if (senha && senha.trim() !== "") {
+        dadosParaAtualizar.senha = await hash(senha, 10);
+      }
+
+      // Atualiza usando o objeto flexível que configuramos no Model
+      const usuario = await CreateUsuarioModel.updateUsuarioModel(idParam, dadosParaAtualizar);
+      
       return res.json(usuario);
     } catch (err: any) {
       console.error("Erro ao atualizar usuário:", err);
