@@ -1,4 +1,6 @@
 import express from "express";
+import ForgotPasswordController from "../useCase/usuario/forgotPassword/ForgotPasswordController";
+import ResetPasswordController from "../useCase/usuario/resetpassword/ResetPasswordController";
 import CreateUsuarioController from "../useCase/usuario/create/CreateUsuarioController";
 import { authenticate } from "../middlewares/authMiddleware";
 import CreateServicoController from "../useCase/servico/create/CreateServicoController";
@@ -10,13 +12,22 @@ usuarioRoutes.post(
   CreateUsuarioController.createUsuario
 );
 
+usuarioRoutes.post(
+  "/usuario/forgot-password",
+  ForgotPasswordController.forgotPassword
+);
+
+usuarioRoutes.post(
+  "/usuario/reset-password",
+  ResetPasswordController.resetPassword
+);
+
 usuarioRoutes.get(
   "/usuario/me",
   authenticate,
   CreateUsuarioController.me
 );
 
-// ROTA ADICIONADA
 usuarioRoutes.get(
   "/usuario/me/servicos",
   authenticate,
