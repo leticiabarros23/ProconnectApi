@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import ForgotPasswordModel from "./ForgotPasswordModel";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 class ForgotPasswordController {
   async forgotPassword(req: Request, res: Response) {
@@ -15,20 +17,10 @@ class ForgotPasswordController {
 
       const token = await ForgotPasswordModel.createResetToken(usuario.id);
 
-        const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false,
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-        },
-        });
-
       const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
 
-      await transporter.sendMail({
-        from: `"ProConnect" <${process.env.EMAIL_USER}>`,
+      await resend.emails.send({
+        from: "ProConnect <onboarding@resend.dev>",
         to: email,
         subject: "Recuperação de senha - ProConnect",
         html: `
@@ -47,4 +39,3 @@ class ForgotPasswordController {
 }
 
 export default new ForgotPasswordController();
-
