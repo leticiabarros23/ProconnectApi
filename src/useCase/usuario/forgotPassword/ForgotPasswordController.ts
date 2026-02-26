@@ -1,16 +1,10 @@
 import { Request, Response } from "express";
 import ForgotPasswordModel from "./ForgotPasswordModel";
-import nodemailer from "nodemailer";
 import { generateEmailHtml } from "../../../lib/emailTemplate";
+import { BrevoClient } from "@getbrevo/brevo";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.BREVO_SMTP_HOST,
-  port: Number(process.env.BREVO_SMTP_PORT),
-  secure: true,
-  auth: {
-    user: process.env.BREVO_SMTP_USER,
-    pass: process.env.BREVO_SMTP_PASS,
-  },
+const brevo = new BrevoClient({
+  apiKey: process.env.BREVO_API_KEY!,
 });
 
 class ForgotPasswordController {
@@ -33,11 +27,11 @@ class ForgotPasswordController {
         <p style="margin-top:16px;">Ou copie e cole este link no navegador:<br>${resetLink}</p>
       `;
 
-      await transporter.sendMail({
-        from: `"ProConnect" <${process.env.BREVO_SMTP_USER}>`,
-        to: email,
+      await brevo.transactionalEmails.sendTransacEmail({
+        sender: { name: "ProConnect", email: process.env.BREVO_SENDER_EMAIL! },
+        to: [{ email }],
         subject: "Recuperação de senha - ProConnect",
-        html: generateEmailHtml(emailContent),
+        htmlContent: generateEmailHtml(emailContent),
       });
 
       return res.status(200).json({ message: "E-mail de recuperação enviado com sucesso." });
