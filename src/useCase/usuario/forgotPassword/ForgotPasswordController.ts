@@ -4,12 +4,12 @@ import nodemailer from "nodemailer";
 import { generateEmailHtml } from "../../../lib/emailTemplate";
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // true para 465, false para 587
+  host: process.env.BREVO_SMTP_HOST,
+  port: Number(process.env.BREVO_SMTP_PORT),
+  secure: false,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: process.env.BREVO_SMTP_USER,
+    pass: process.env.BREVO_SMTP_PASS,
   },
 });
 
@@ -34,7 +34,7 @@ class ForgotPasswordController {
       `;
 
       await transporter.sendMail({
-        from: `"ProConnect" <${process.env.EMAIL_USER}>`,
+        from: `"ProConnect" <${process.env.BREVO_SMTP_USER}>`,
         to: email,
         subject: "Recuperação de senha - ProConnect",
         html: generateEmailHtml(emailContent),
