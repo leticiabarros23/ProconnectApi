@@ -6,14 +6,23 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import prisma from "../../../lib/prisma";
 
 class CreateServicoController {
-  static async getAllServico(req: Request, res: Response) {
+static async getAllServico(req: Request, res: Response) {
   const filtroCidade = typeof req.query.cidade === "string" ? req.query.cidade : undefined;
   const filtroCategoria = req.query.categoriaId ? Number(req.query.categoriaId) : undefined;
   const filtroNomeCategoria = typeof req.query.categoria === "string" ? req.query.categoria : undefined;
   const filtroSegmento = req.query.segmentoId ? Number(req.query.segmentoId) : undefined;
+  const filtroNomeProfissional = typeof req.query.profissional === "string" ? req.query.profissional : undefined;
+  const filtroNomeNegocio = typeof req.query.negocio === "string" ? req.query.negocio : undefined;
 
   try {
-    const servicos = await CreateServicoModel.getAllServicoModel(filtroCidade, filtroCategoria, filtroNomeCategoria, filtroSegmento);
+    const servicos = await CreateServicoModel.getAllServicoModel(
+      filtroCidade,
+      filtroCategoria,
+      filtroNomeCategoria,
+      filtroSegmento,
+      filtroNomeProfissional,
+      filtroNomeNegocio
+    );
     if (!servicos.length) {
       return res.status(404).json({ error: true, message: "Nenhum serviço encontrado." });
     }
