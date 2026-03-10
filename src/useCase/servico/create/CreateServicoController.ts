@@ -6,32 +6,34 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import prisma from "../../../lib/prisma";
 
 class CreateServicoController {
-static async getAllServico(req: Request, res: Response) {
-  const filtroCidade = typeof req.query.cidade === "string" ? req.query.cidade : undefined;
-  const filtroCategoria = req.query.categoriaId ? Number(req.query.categoriaId) : undefined;
-  const filtroNomeCategoria = typeof req.query.categoria === "string" ? req.query.categoria : undefined;
-  const filtroSegmento = req.query.segmentoId ? Number(req.query.segmentoId) : undefined;
-  const filtroNomeProfissional = typeof req.query.profissional === "string" ? req.query.profissional : undefined;
-  const filtroNomeNegocio = typeof req.query.negocio === "string" ? req.query.negocio : undefined;
+  static async getAllServico(req: Request, res: Response) {
+    const filtroCidade = typeof req.query.cidade === "string" ? req.query.cidade : undefined;
+    const filtroCategoria = req.query.categoriaId ? Number(req.query.categoriaId) : undefined;
+    const filtroNomeCategoria = typeof req.query.categoria === "string" ? req.query.categoria : undefined;
+    const filtroSegmento = req.query.segmentoId ? Number(req.query.segmentoId) : undefined;
+    const filtroNomeProfissional = typeof req.query.profissional === "string" ? req.query.profissional : undefined;
+    const filtroNomeNegocio = typeof req.query.negocio === "string" ? req.query.negocio : undefined;
+    const filtroDisponivel = req.query.disponivel === "true" ? true : req.query.disponivel === "false" ? false : undefined;
 
-  try {
-    const servicos = await CreateServicoModel.getAllServicoModel(
-      filtroCidade,
-      filtroCategoria,
-      filtroNomeCategoria,
-      filtroSegmento,
-      filtroNomeProfissional,
-      filtroNomeNegocio
-    );
-    if (!servicos.length) {
-      return res.status(404).json({ error: true, message: "Nenhum serviço encontrado." });
+    try {
+      const servicos = await CreateServicoModel.getAllServicoModel(
+        filtroCidade,
+        filtroCategoria,
+        filtroNomeCategoria,
+        filtroSegmento,
+        filtroNomeProfissional,
+        filtroNomeNegocio,
+        filtroDisponivel
+      );
+      if (!servicos.length) {
+        return res.status(404).json({ error: true, message: "Nenhum serviço encontrado." });
+      }
+      return res.status(200).json(servicos);
+    } catch (err) {
+      console.error("Erro ao buscar serviços:", err);
+      return res.status(500).json({ error: true, message: "Erro ao buscar serviços." });
     }
-    return res.status(200).json(servicos);
-  } catch (err) {
-    console.error("Erro ao buscar serviços:", err);
-    return res.status(500).json({ error: true, message: "Erro ao buscar serviços." });
   }
-}
 
   static async createServico(req: Request, res: Response) {
     if (!req.user || !("id" in req.user)) {
@@ -154,6 +156,27 @@ static async getAllServico(req: Request, res: Response) {
     } catch (err) {
       console.error("Erro ao buscar serviços do usuário:", err);
       return res.status(500).json({ error: true, message: "Erro ao buscar serviços." });
+    }
+  }
+
+  static async toggleDisponivel(req: Request, res: Response) {
+    const { id } = req.params;
+    const { disponivel } = req.body;
+    const usuarioId = req.user!.id;
+
+    if (typeof disponivel !== "boolean") {
+      return res.status(400).json({ error: true, message: "O campo disponivel deve ser true ou false." });
+    }
+
+    try {
+      const servico = await CreateServicoModel.toggleDisponivel(Number(id), usuarioId, disponivel);
+      return res.status(200).json(servico);
+    } catch (err: any) {
+      if (err.message.includes("encontrado") || err.message.includes("pertence")) {
+        return res.status(404).json({ error: true, message: err.message });
+      }
+      console.error("Erro ao atualizar disponibilidade:", err);
+      return res.status(500).json({ error: true, message: "Erro interno do servidor." });
     }
   }
 }

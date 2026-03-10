@@ -41,32 +41,34 @@ class CreateServicoModel {
     });
   }
 
-async getAllServicoModel(
-  filtroCidade?: string,
-  filtroCategoria?: number,
-  filtroNomeCategoria?: string,
-  filtroSegmento?: number,
-  filtroNomeProfissional?: string,
-  filtroNomeNegocio?: string
-) {
-  return prisma.servico.findMany({
-    where: {
-      ...(filtroCidade ? { localizacao: { cidade: { contains: filtroCidade, mode: "insensitive" } } } : {}),
-      ...(filtroCategoria ? { categoriaId: filtroCategoria } : {}),
-      ...(filtroNomeCategoria ? { categoria: { nomeServico: { contains: filtroNomeCategoria, mode: "insensitive" } } } : {}),
-      ...(filtroSegmento ? { categoria: { segmentoId: filtroSegmento } } : {}),
-      ...(filtroNomeProfissional ? { usuario: { nome: { contains: filtroNomeProfissional, mode: "insensitive" } } } : {}),
-      ...(filtroNomeNegocio ? { nomeNegocio: { contains: filtroNomeNegocio, mode: "insensitive" } } : {}),
-    },
-    include: {
-      usuario: { select: usuarioSelect },
-      categoria: true,
-      localizacao: true,
-      preco: true,
-      avaliacao: true,
-    },
-  });
-}
+  async getAllServicoModel(
+    filtroCidade?: string,
+    filtroCategoria?: number,
+    filtroNomeCategoria?: string,
+    filtroSegmento?: number,
+    filtroNomeProfissional?: string,
+    filtroNomeNegocio?: string,
+    filtroDisponivel?: boolean
+  ) {
+    return prisma.servico.findMany({
+      where: {
+        ...(filtroCidade ? { localizacao: { cidade: { contains: filtroCidade, mode: "insensitive" } } } : {}),
+        ...(filtroCategoria ? { categoriaId: filtroCategoria } : {}),
+        ...(filtroNomeCategoria ? { categoria: { nomeServico: { contains: filtroNomeCategoria, mode: "insensitive" } } } : {}),
+        ...(filtroSegmento ? { categoria: { segmentoId: filtroSegmento } } : {}),
+        ...(filtroNomeProfissional ? { usuario: { nome: { contains: filtroNomeProfissional, mode: "insensitive" } } } : {}),
+        ...(filtroNomeNegocio ? { nomeNegocio: { contains: filtroNomeNegocio, mode: "insensitive" } } : {}),
+        ...(filtroDisponivel !== undefined ? { disponivel: filtroDisponivel } : {}),
+      },
+      include: {
+        usuario: { select: usuarioSelect },
+        categoria: true,
+        localizacao: true,
+        preco: true,
+        avaliacao: true,
+      },
+    });
+  }
 
   async findServicoById(id: number) {
     return prisma.servico.findUnique({
@@ -106,6 +108,22 @@ async getAllServicoModel(
     return prisma.servico.update({
       where: { id },
       data,
+    });
+  }
+
+  async toggleDisponivel(id: number, usuarioId: number, disponivel: boolean) {
+    const servico = await prisma.servico.findUnique({ where: { id } });
+
+    if (!servico) {
+      throw new Error("Serviço não encontrado.");
+    }
+    if (servico.usuarioId !== usuarioId) {
+      throw new Error("Este serviço não pertence a você.");
+    }
+
+    return prisma.servico.update({
+      where: { id },
+      data: { disponivel },
     });
   }
 

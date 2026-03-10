@@ -40,6 +40,7 @@ model Servico {
   nomeNegocio   String
   descricao     String
   imagem        String?
+  disponivel    Boolean      @default(true) // true = disponível, false = indisponível
   usuarioId     Int
   categoriaId   Int?
   localizacaoId Int?

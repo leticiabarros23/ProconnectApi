@@ -32,4 +32,11 @@ servicoRoutes.delete(
   CreateServicoController.deleteServico
 );
 
+servicoRoutes.patch(
+  "/servico/:id/disponivel",
+  authenticate,
+  CreateServicoController.toggleDisponivel
+);
+
+
 export default servicoRoutes;
