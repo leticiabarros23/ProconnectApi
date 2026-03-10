@@ -41,12 +41,13 @@ class CreateServicoModel {
     });
   }
 
-  async getAllServicoModel(filtroCidade?: string, filtroCategoria?: number, filtroNomeCategoria?: string) {
+ async getAllServicoModel(filtroCidade?: string, filtroCategoria?: number, filtroNomeCategoria?: string, filtroSegmento?: number) {
   return prisma.servico.findMany({
     where: {
       ...(filtroCidade ? { localizacao: { cidade: { contains: filtroCidade, mode: "insensitive" } } } : {}),
       ...(filtroCategoria ? { categoriaId: filtroCategoria } : {}),
       ...(filtroNomeCategoria ? { categoria: { nomeServico: { contains: filtroNomeCategoria, mode: "insensitive" } } } : {}),
+      ...(filtroSegmento ? { categoria: { segmentoId: filtroSegmento } } : {}),
     },
     include: {
       usuario: { select: usuarioSelect },

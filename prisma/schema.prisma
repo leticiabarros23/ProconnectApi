@@ -59,6 +59,8 @@ model Categoria {
   nomeServico  String    @unique
   criadoEm     DateTime  @default(now())
   atualizadoEm DateTime  @updatedAt
+  segmentoId   Int?
+  segmento     Segmento? @relation(fields: [segmentoId], references: [id])
   servicos     Servico[]
 }
 
@@ -114,4 +116,12 @@ model ContatoWhatsapp {
   usuario Usuario @relation(fields: [usuarioId], references: [id])
   servico Servico @relation(fields: [servicoId], references: [id])
   @@unique([usuarioId, servicoId])
+}
+
+model Segmento {
+  id         Int         @id @default(autoincrement())
+  nome       String      @unique // ex: "Beleza", "Tecnologia"
+  icone      String?     // ex: "scissors", "code"
+  criadoEm   DateTime    @default(now())
+  categorias Categoria[]
 }

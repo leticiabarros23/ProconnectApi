@@ -10,9 +10,10 @@ class CreateServicoController {
   const filtroCidade = typeof req.query.cidade === "string" ? req.query.cidade : undefined;
   const filtroCategoria = req.query.categoriaId ? Number(req.query.categoriaId) : undefined;
   const filtroNomeCategoria = typeof req.query.categoria === "string" ? req.query.categoria : undefined;
+  const filtroSegmento = req.query.segmentoId ? Number(req.query.segmentoId) : undefined;
 
   try {
-    const servicos = await CreateServicoModel.getAllServicoModel(filtroCidade, filtroCategoria, filtroNomeCategoria);
+    const servicos = await CreateServicoModel.getAllServicoModel(filtroCidade, filtroCategoria, filtroNomeCategoria, filtroSegmento);
     if (!servicos.length) {
       return res.status(404).json({ error: true, message: "Nenhum serviço encontrado." });
     }
