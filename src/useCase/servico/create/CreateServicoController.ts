@@ -7,19 +7,21 @@ import prisma from "../../../lib/prisma";
 
 class CreateServicoController {
   static async getAllServico(req: Request, res: Response) {
-    const filtroCidade = typeof req.query.cidade === "string" ? req.query.cidade : undefined;
+  const filtroCidade = typeof req.query.cidade === "string" ? req.query.cidade : undefined;
+  const filtroCategoria = req.query.categoriaId ? Number(req.query.categoriaId) : undefined;
+  const filtroNomeCategoria = typeof req.query.categoria === "string" ? req.query.categoria : undefined;
 
-    try {
-      const servicos = await CreateServicoModel.getAllServicoModel(filtroCidade);
-      if (!servicos.length) {
-        return res.status(404).json({ error: true, message: "Nenhum serviço encontrado." });
-      }
-      return res.status(200).json(servicos);
-    } catch (err) {
-      console.error("Erro ao buscar serviços:", err);
-      return res.status(500).json({ error: true, message: "Erro ao buscar serviços." });
+  try {
+    const servicos = await CreateServicoModel.getAllServicoModel(filtroCidade, filtroCategoria, filtroNomeCategoria);
+    if (!servicos.length) {
+      return res.status(404).json({ error: true, message: "Nenhum serviço encontrado." });
     }
+    return res.status(200).json(servicos);
+  } catch (err) {
+    console.error("Erro ao buscar serviços:", err);
+    return res.status(500).json({ error: true, message: "Erro ao buscar serviços." });
   }
+}
 
   static async createServico(req: Request, res: Response) {
     if (!req.user || !("id" in req.user)) {
@@ -65,7 +67,6 @@ class CreateServicoController {
         })),
         catId,
         usuarioId,
-        // 🔥 sem imagem
         localizacaoPayload
       );
 
@@ -73,7 +74,7 @@ class CreateServicoController {
     } catch (err: any) {
       console.error("Erro ao criar serviço:", err);
 
-    if (err instanceof PrismaClientKnownRequestError) {
+      if (err instanceof PrismaClientKnownRequestError) {
         if (err.code === "P2025") {
           return res.status(400).json({ error: true, message: "Registro relacionado não encontrado (categoria/usuário)." });
         }
@@ -98,65 +99,52 @@ class CreateServicoController {
     return res.json(servico);
   }
 
-static async updateServico(req: Request, res: Response) {
-  const { id } = req.params;
-  const servicoData = req.body;
-  const usuarioId = req.user!.id;
+  static async updateServico(req: Request, res: Response) {
+    const { id } = req.params;
+    const servicoData = req.body;
+    const usuarioId = req.user!.id;
 
-  try {
-    const servico = await CreateServicoModel.updateServico(Number(id), usuarioId, servicoData);
-    return res.status(200).json(servico);
-  } catch (err: any) {
-    if (err.message.includes("encontrado") || err.message.includes("pertence")) {
-      return res.status(404).json({ error: true, message: err.message });
+    try {
+      const servico = await CreateServicoModel.updateServico(Number(id), usuarioId, servicoData);
+      return res.status(200).json(servico);
+    } catch (err: any) {
+      if (err.message.includes("encontrado") || err.message.includes("pertence")) {
+        return res.status(404).json({ error: true, message: err.message });
+      }
+      console.error("Erro ao atualizar serviço:", err);
+      return res.status(500).json({ error: true, message: "Erro interno do servidor." });
     }
-    console.error("Erro ao atualizar serviço:", err);
-    return res.status(500).json({ error: true, message: "Erro interno do servidor." });
   }
-}
-
 
   static async deleteServico(req: Request, res: Response) {
-  const { id } = req.params;
-  const usuarioId = req.user!.id;
+    const { id } = req.params;
+    const usuarioId = req.user!.id;
 
-  try {
-    await CreateServicoModel.deleteServico(Number(id), usuarioId);
-    return res.status(204).send(); // No Content
-  } catch (err: any) {
-    if (err.message.includes("encontrado") || err.message.includes("pertence")) {
-      return res.status(404).json({ error: true, message: err.message });
+    try {
+      await CreateServicoModel.deleteServico(Number(id), usuarioId);
+      return res.status(204).send();
+    } catch (err: any) {
+      if (err.message.includes("encontrado") || err.message.includes("pertence")) {
+        return res.status(404).json({ error: true, message: err.message });
+      }
+      console.error("Erro ao deletar serviço:", err);
+      return res.status(500).json({ error: true, message: "Erro interno do servidor." });
     }
-    console.error("Erro ao deletar serviço:", err);
-    return res.status(500).json({ error: true, message: "Erro interno do servidor." });
   }
-}
 
-  // Adicione este novo método dentro da classe CreateServicoController
-static async getServicosByUsuario(req: Request, res: Response) {
+  static async getServicosByUsuario(req: Request, res: Response) {
     const usuarioId = req.user!.id;
 
     try {
       const servicos = await CreateServicoModel.getServicosByUsuarioId(usuarioId);
       if (!servicos.length) {
-        return res.status(200).json([]); // Retorna array vazio se não houver serviços
+        return res.status(200).json([]);
       }
       return res.status(200).json(servicos);
     } catch (err) {
       console.error("Erro ao buscar serviços do usuário:", err);
       return res.status(500).json({ error: true, message: "Erro ao buscar serviços." });
     }
-}
-
-// Adicione este novo método dentro da classe CreateServicoModel
-async getServicosByUsuarioId(usuarioId: number) {
-    return prisma.servico.findMany({
-      where: { usuarioId },
-      include: {
-        categoria: true,
-        preco: true,
-      },
-    });
   }
 }
 

@@ -1,5 +1,16 @@
 // src/useCase/servico/create/CreateServicoModel.ts
-import  prisma  from "../../../lib/prisma";
+import prisma from "../../../lib/prisma";
+
+const usuarioSelect = {
+  id: true,
+  nome: true,
+  email: true,
+  telefone: true,
+  estado: true,
+  cidade: true,
+  endereco: true,
+  criadoEm: true,
+};
 
 class CreateServicoModel {
   async createServicoModel(
@@ -21,30 +32,37 @@ class CreateServicoModel {
           ? { create: preco.map((p) => ({ nomeservico: p.nomeservico, precificacao: p.precificacao })) }
           : undefined,
       },
-      include: { localizacao: true, preco: true, categoria: true, usuario: true },
-    });
-  }
-
-  async getAllServicoModel(filtroCidade?: string) {
-    return prisma.servico.findMany({
-      where: filtroCidade
-        ? { localizacao: { cidade: { contains: filtroCidade, mode: "insensitive" } } }
-        : {},
       include: {
-        usuario: true,
-        categoria: true,
         localizacao: true,
         preco: true,
-        avaliacao: true,
+        categoria: true,
+        usuario: { select: usuarioSelect },
       },
     });
   }
+
+  async getAllServicoModel(filtroCidade?: string, filtroCategoria?: number, filtroNomeCategoria?: string) {
+  return prisma.servico.findMany({
+    where: {
+      ...(filtroCidade ? { localizacao: { cidade: { contains: filtroCidade, mode: "insensitive" } } } : {}),
+      ...(filtroCategoria ? { categoriaId: filtroCategoria } : {}),
+      ...(filtroNomeCategoria ? { categoria: { nomeServico: { contains: filtroNomeCategoria, mode: "insensitive" } } } : {}),
+    },
+    include: {
+      usuario: { select: usuarioSelect },
+      categoria: true,
+      localizacao: true,
+      preco: true,
+      avaliacao: true,
+    },
+  });
+}
 
   async findServicoById(id: number) {
     return prisma.servico.findUnique({
       where: { id },
       include: {
-        usuario: true,
+        usuario: { select: usuarioSelect },
         categoria: true,
         localizacao: true,
         preco: true,
@@ -59,8 +77,8 @@ class CreateServicoModel {
       include: {
         categoria: true,
         preco: true,
-        avaliacao: true, // Adicionado para consistência
-        localizacao: true, // Adicionado para consistência
+        avaliacao: true,
+        localizacao: true,
       },
     });
   }
@@ -91,17 +109,10 @@ class CreateServicoModel {
       throw new Error("Este serviço não pertence a você.");
     }
 
-    // Executa a exclusão de registros relacionados e do serviço em si dentro de uma transação
     return prisma.$transaction([
-      prisma.preco.deleteMany({
-        where: { servicoId: id },
-      }),
-      prisma.avaliacao.deleteMany({
-        where: { servicoId: id },
-      }),
-      prisma.servico.delete({
-        where: { id },
-      }),
+      prisma.preco.deleteMany({ where: { servicoId: id } }),
+      prisma.avaliacao.deleteMany({ where: { servicoId: id } }),
+      prisma.servico.delete({ where: { id } }),
     ]);
   }
 }

@@ -5,12 +5,12 @@ import { authenticate } from "../middlewares/authMiddleware";
 const servicoRoutes = express.Router();
 
 servicoRoutes.get(
-  "/servico", 
+  "/servico",
   CreateServicoController.getAllServico
 );
 
 servicoRoutes.get(
-  "/servico/:id", 
+  "/servico/:id",
   CreateServicoController.getServicoById
 );
 
@@ -26,20 +26,6 @@ servicoRoutes.put(
   CreateServicoController.updateServico
 );
 
-servicoRoutes.delete(
-  "/servico/:id",
-  authenticate,
-  CreateServicoController.deleteServico
-);
-
-// ROTA ADICIONADA PARA ATUALIZAR
-servicoRoutes.put(
-  "/servico/:id",
-  authenticate,
-  CreateServicoController.updateServico
-);
-
-// ROTA ADICIONADA PARA DELETAR
 servicoRoutes.delete(
   "/servico/:id",
   authenticate,
