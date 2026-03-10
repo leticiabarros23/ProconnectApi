@@ -20,6 +20,9 @@ model Usuario {
   avaliacao Avaliacao[]
   servicos  Servico[]
   resetTokens ResetToken[]
+  servicosRealizados ServicoRealizado[] 
+  contatosWhatsapp ContatoWhatsapp[]
+
 }
 
 model Localizacao {
@@ -46,6 +49,9 @@ model Servico {
   categoria     Categoria?   @relation(fields: [categoriaId], references: [id])
   localizacao   Localizacao? @relation(fields: [localizacaoId], references: [id])
   usuario       Usuario      @relation(fields: [usuarioId], references: [id])
+  servicosRealizados ServicoRealizado[] 
+  contatosWhatsapp ContatoWhatsapp[]
+
 }
 
 model Categoria {
@@ -58,7 +64,7 @@ model Categoria {
 
 model Avaliacao {
   id           Int      @id @default(autoincrement())
-  star         Float
+  star         Int  
   descricao    String
   servicoId    Int
   usuarioId    Int
@@ -85,4 +91,27 @@ model ResetToken {
   expiresAt DateTime
   usuarioId Int
   usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+}
+
+model ServicoRealizado {
+  id           Int       @id @default(autoincrement())
+  usuarioId    Int
+  servicoId    Int
+  confirmado   Boolean?  
+  respondidoEm DateTime? 
+  realizadoEm  DateTime  @default(now())
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  servico Servico @relation(fields: [servicoId], references: [id])
+  @@unique([usuarioId, servicoId])
+}
+
+model ContatoWhatsapp {
+  id         Int      @id @default(autoincrement())
+  usuarioId  Int
+  servicoId  Int
+  clicadoEm  DateTime @default(now())
+  perguntado Boolean  @default(false) // true = já exibiu o modal de confirmação
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  servico Servico @relation(fields: [servicoId], references: [id])
+  @@unique([usuarioId, servicoId])
 }

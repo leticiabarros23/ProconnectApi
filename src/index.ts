@@ -8,6 +8,9 @@ import categoriaRoutes from './routes/categoriaRoutes';
 import avaliacaoRoutes from './routes/avaliacaoRoutes';
 import precoRoutes from './routes/precoRoutes';
 import authRoutes from './routes/authRoutes';
+import servicoRealizadoRoutes from "./routes/servicoRealizadoRoutes";
+import contatoWhatsappRoutes from "./routes/contatoWhatsappRoutes";
+
 
 dotenv.config();
 
@@ -52,6 +55,9 @@ app.use(usuarioRoutes)
 app.use(avaliacaoRoutes)
 app.use(precoRoutes)
 app.use(authRoutes)
+app.use(servicoRealizadoRoutes);
+app.use(contatoWhatsappRoutes);
+
 
 app.get('/',(req,res)=>{
   res.status(200).send('<h1>Está Online</h1>')
