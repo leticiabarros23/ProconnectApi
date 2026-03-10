@@ -2,42 +2,41 @@ import { Request, Response } from "express";
 import CreateUsuarioModel from "./CreateUsuarioModel";
 import { hash } from "bcryptjs";
 
+// Função de validação de senha forte
+function validarSenhaForte(senha: string): string | null {
+  if (senha.length < 8) return "A senha deve ter no mínimo 8 caracteres.";
+  if (!/[A-Z]/.test(senha)) return "A senha deve ter pelo menos 1 letra maiúscula.";
+  if (!/[0-9]/.test(senha)) return "A senha deve ter pelo menos 1 número.";
+  if (!/[^a-zA-Z0-9]/.test(senha)) return "A senha deve ter pelo menos 1 caractere especial.";
+  return null;
+}
+
 class CreateUsuarioController {
   async createUsuario(req: Request, res: Response) {
     const { nome, email, telefone, estado, cidade, endereco, senha } = req.body;
 
-    // Validação de campos obrigatórios
     if (!nome || !email || !telefone || !estado || !cidade || !endereco || !senha) {
-      return res
-        .status(400)
-        .json({ error: true, message: "Todos os campos são obrigatórios." });
+      return res.status(400).json({ error: true, message: "Todos os campos são obrigatórios." });
+    }
+
+    // Validação de senha forte
+    const erroSenha = validarSenhaForte(senha);
+    if (erroSenha) {
+      return res.status(400).json({ error: true, message: erroSenha });
     }
 
     try {
-      // --- VERIFICAÇÃO DE E-MAIL DUPLICADO ---
-      // Verificamos se o e-mail já existe antes de fazer qualquer outra coisa
       const usuarioJaExiste = await CreateUsuarioModel.findByEmail(email);
-      
       if (usuarioJaExiste) {
         return res.status(400).json({ 
           error: true, 
           message: "Este e-mail já está cadastrado. Tente fazer login ou recupere sua senha." 
         });
       }
-      // ---------------------------------------
 
-      // 1. Gera o hash da senha de forma segura
       const senhaCriptografada = await hash(senha, 10);
-
-      // 2. Cria o usuário passando a senha já criptografada
       const usuario = await CreateUsuarioModel.createUsuarioModel(
-        nome,
-        email,
-        telefone,
-        estado,
-        cidade,
-        endereco,
-        senhaCriptografada
+        nome, email, telefone, estado, cidade, endereco, senhaCriptografada
       );
 
       return res.status(201).json(usuario);
@@ -83,17 +82,18 @@ class CreateUsuarioController {
     const { nome, email, telefone, estado, cidade, endereco, senha } = req.body;
     
     try {
-      // Criamos um objeto com os dados básicos
       const dadosParaAtualizar: any = { nome, email, telefone, estado, cidade, endereco };
 
-      // Se o usuário enviou uma senha nova, gera um novo hash
       if (senha && senha.trim() !== "") {
+        // Validação de senha forte ao atualizar também
+        const erroSenha = validarSenhaForte(senha);
+        if (erroSenha) {
+          return res.status(400).json({ error: true, message: erroSenha });
+        }
         dadosParaAtualizar.senha = await hash(senha, 10);
       }
 
-      // Atualiza usando o objeto flexível que configuramos no Model
       const usuario = await CreateUsuarioModel.updateUsuarioModel(idParam, dadosParaAtualizar);
-      
       return res.json(usuario);
     } catch (err: any) {
       console.error("Erro ao atualizar usuário:", err);
