@@ -11,6 +11,7 @@ import authRoutes from './routes/authRoutes';
 import servicoRealizadoRoutes from "./routes/servicoRealizadoRoutes";
 import contatoWhatsappRoutes from "./routes/contatoWhatsappRoutes";
 import segmentoRoutes from "./routes/segmentoRoutes";
+import portfolioRoutes from "./routes/portfolioRoutes";
 
 
 dotenv.config();
@@ -59,6 +60,7 @@ app.use(authRoutes)
 app.use(servicoRealizadoRoutes);
 app.use(contatoWhatsappRoutes);
 app.use(segmentoRoutes);
+app.use(portfolioRoutes);
 
 
 app.get('/',(req,res)=>{

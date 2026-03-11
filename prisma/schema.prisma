@@ -22,7 +22,7 @@ model Usuario {
   resetTokens ResetToken[]
   servicosRealizados ServicoRealizado[] 
   contatosWhatsapp ContatoWhatsapp[]
-
+  portfolio Portfolio[]
 }
 
 model Localizacao {
@@ -52,6 +52,7 @@ model Servico {
   usuario       Usuario      @relation(fields: [usuarioId], references: [id])
   servicosRealizados ServicoRealizado[] 
   contatosWhatsapp ContatoWhatsapp[]
+  portfolio Portfolio[]
 
 }
 
@@ -125,4 +126,14 @@ model Segmento {
   icone      String?     // ex: "scissors", "code"
   criadoEm   DateTime    @default(now())
   categorias Categoria[]
+}
+
+model Portfolio {
+  id        Int      @id @default(autoincrement())
+  url       String   
+  servicoId Int
+  usuarioId Int
+  criadoEm  DateTime @default(now())
+  servico   Servico  @relation(fields: [servicoId], references: [id])
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
 }
