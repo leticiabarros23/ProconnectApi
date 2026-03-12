@@ -4,6 +4,7 @@ import CreateServicoModel from "./CreateServicoModel";
 import CreateUsuarioModel from "../../usuario/create/CreateUsuarioModel";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import prisma from "../../../lib/prisma";
+import { supabase } from "../../../lib/supabase";
 
 class CreateServicoController {
   static async getAllServico(req: Request, res: Response) {
@@ -178,6 +179,52 @@ class CreateServicoController {
       console.error("Erro ao atualizar disponibilidade:", err);
       return res.status(500).json({ error: true, message: "Erro interno do servidor." });
     }
+  }
+
+  static async uploadImagem(req: Request, res: Response) {
+  try {
+    const usuarioId = req.user?.id;
+    const { id } = req.params;
+
+    if (!usuarioId) {
+      return res.status(401).json({ error: true, message: "Não autenticado." });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: true, message: "Nenhuma imagem enviada." });
+    }
+
+    const nomeArquivo = `${usuarioId}/${id}/${Date.now()}-${req.file.originalname}`;
+
+    const { data, error } = await supabase.storage
+      .from("servicos")
+      .upload(nomeArquivo, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: true,
+      });
+
+    if (error) {
+      return res.status(500).json({ error: true, message: "Erro ao fazer upload da imagem." });
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("servicos")
+      .getPublicUrl(data.path);
+
+    const servico = await CreateServicoModel.uploadImagemServico(
+      Number(id),
+      usuarioId,
+      urlData.publicUrl
+    );
+
+    return res.status(200).json(servico);
+  } catch (err: any) {
+    if (err.message.includes("encontrado") || err.message.includes("pertence")) {
+      return res.status(404).json({ error: true, message: err.message });
+    }
+    console.error("Erro ao fazer upload da imagem:", err);
+    return res.status(500).json({ error: true, message: "Erro interno do servidor." });
+   }
   }
 }
 

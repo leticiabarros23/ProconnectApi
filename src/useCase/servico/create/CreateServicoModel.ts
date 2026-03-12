@@ -1,5 +1,6 @@
 // src/useCase/servico/create/CreateServicoModel.ts
 import prisma from "../../../lib/prisma";
+import { supabase } from "../../../lib/supabase";
 
 const usuarioSelect = {
   id: true,
@@ -147,6 +148,34 @@ class CreateServicoModel {
       prisma.portfolio.deleteMany({ where: { servicoId: id } }),
       prisma.servico.delete({ where: { id } }),
     ]);
+  }
+
+  async uploadImagemServico(id: number, usuarioId: number, imageUrl: string) {
+  const servico = await prisma.servico.findUnique({ where: { id } });
+
+  if (!servico) throw new Error("Serviço não encontrado.");
+  if (servico.usuarioId !== usuarioId) throw new Error("Este serviço não pertence a você.");
+
+  // Se já tinha imagem, deleta do storage antes
+  if (servico.imagem) {
+  const path = decodeURIComponent(servico.imagem.split("/servicos/")[1]);
+  console.log("Path para deletar:", path);
+  const { error } = await supabase.storage.from("servicos").remove([path]);
+  if (error) console.error("Erro ao deletar imagem antiga:", error);
+}
+
+  return prisma.servico.update({
+    where: { id },
+    data: { imagem: imageUrl },
+    include: {
+      usuario: { select: usuarioSelect },
+      categoria: true,
+      localizacao: true,
+      preco: true,
+      avaliacao: true,
+      portfolio: true,
+      },
+    });
   }
 }
 
