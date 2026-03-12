@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id                 Int                @id @default(autoincrement())
+  nome               String
+  email              String             @unique
+  telefone           String
+  estado             String
+  cidade             String
+  endereco           String
+  senha              String
+  criadoEm           DateTime           @default(now())
+  avaliacao          Avaliacao[]
+  servicos           Servico[]
+  resetTokens        ResetToken[]
+  servicosRealizados ServicoRealizado[]
+  contatosWhatsapp   ContatoWhatsapp[]
+  portfolio          Portfolio[]
+}
+
+model Localizacao {
+  id       Int       @id @default(autoincrement())
+  numero   String
+  bairro   String
+  cidade   String
+  estado   String
+  criadoEm DateTime  @default(now())
+  servico  Servico[]
+}
+
+model Servico {
+  id                 Int                @id @default(autoincrement())
+  nomeNegocio        String
+  descricao          String
+  imagem             String?
+  disponivel         Boolean            @default(true) // true = disponível, false = indisponível
+  usuarioId          Int
+  categoriaId        Int?
+  localizacaoId      Int?
+  criadoEm           DateTime           @default(now())
+  avaliacao          Avaliacao[]
+  preco              Preco[]
+  categoria          Categoria?         @relation(fields: [categoriaId], references: [id])
+  localizacao        Localizacao?       @relation(fields: [localizacaoId], references: [id])
+  usuario            Usuario            @relation(fields: [usuarioId], references: [id])
+  servicosRealizados ServicoRealizado[]
+  contatosWhatsapp   ContatoWhatsapp[]
+  portfolio          Portfolio[]
+}
+
+model Categoria {
+  id           Int       @id @default(autoincrement())
+  nomeServico  String    @unique
+  criadoEm     DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+  segmentoId   Int?
+  segmento     Segmento? @relation(fields: [segmentoId], references: [id])
+  servicos     Servico[]
+}
+
+model Avaliacao {
+  id           Int      @id @default(autoincrement())
+  star         Int
+  descricao    String
+  servicoId    Int
+  usuarioId    Int
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+  servico      Servico  @relation(fields: [servicoId], references: [id])
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id])
+}
+
+model Preco {
+  id           Int      @id @default(autoincrement())
+  nomeservico  String
+  precificacao Float
+  servicoId    Int
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+  servico      Servico  @relation(fields: [servicoId], references: [id])
+}
+
+model ResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  usuarioId Int
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+}
+
+model ServicoRealizado {
+  id           Int       @id @default(autoincrement())
+  usuarioId    Int
+  servicoId    Int
+  confirmado   Boolean?
+  respondidoEm DateTime?
+  realizadoEm  DateTime  @default(now())
+  usuario      Usuario   @relation(fields: [usuarioId], references: [id])
+  servico      Servico   @relation(fields: [servicoId], references: [id])
+
+  @@unique([usuarioId, servicoId])
+}
+
+model ContatoWhatsapp {
+  id         Int      @id @default(autoincrement())
+  usuarioId  Int
+  servicoId  Int
+  clicadoEm  DateTime @default(now())
+  perguntado Boolean  @default(false) // true = já exibiu o modal de confirmação
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id])
+  servico    Servico  @relation(fields: [servicoId], references: [id])
+
+  @@unique([usuarioId, servicoId])
+}
+
+model Segmento {
+  id         Int         @id @default(autoincrement())
+  nome       String      @unique // ex: "Beleza", "Tecnologia"
+  icone      String? // ex: "scissors", "code"
+  criadoEm   DateTime    @default(now())
+  categorias Categoria[]
+}
+
+model Portfolio {
+  id        Int      @id @default(autoincrement())
+  url       String
+  servicoId Int
+  usuarioId Int
+  criadoEm  DateTime @default(now())
+  servico   Servico  @relation(fields: [servicoId], references: [id])
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+}
