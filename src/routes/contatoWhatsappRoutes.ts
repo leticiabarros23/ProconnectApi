@@ -16,4 +16,10 @@ contatoWhatsappRoutes.get(
   ContatoWhatsappController.buscarPendentes
 );
 
+contatoWhatsappRoutes.get(
+  "/contato-whatsapp/meus-pedidos",
+  authenticate,
+  ContatoWhatsappController.buscarTodosContatos
+);
+
 export default contatoWhatsappRoutes;

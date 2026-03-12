@@ -48,6 +48,30 @@ class ContatoWhatsappModel {
       },
     });
   }
+
+  // Buscar todos os contatos do usuário para a página "Meus Pedidos"
+  async buscarTodosContatos(usuarioId: number) {
+    return await prisma.contatoWhatsapp.findMany({
+      where: { usuarioId },
+      include: {
+        servico: {
+          select: {
+            id: true,
+            nomeNegocio: true,
+            imagem: true,
+            descricao: true,
+            categoria: {
+              select: { nomeServico: true },
+            },
+            usuario: {
+              select: { nome: true, telefone: true },
+            },
+          },
+        },
+      },
+      orderBy: { clicadoEm: "desc" },
+    });
+  }
 }
 
 export default new ContatoWhatsappModel();

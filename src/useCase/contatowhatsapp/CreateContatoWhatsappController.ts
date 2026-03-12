@@ -53,6 +53,34 @@ class ContatoWhatsappController {
       });
     }
   }
+
+  // Buscar todos os contatos para a página "Meus Pedidos"
+  async buscarTodosContatos(req: Request, res: Response) {
+    try {
+      const usuarioId = req.user?.id;
+
+      if (!usuarioId) {
+        return res.status(401).json({
+          error: true,
+          message: "Usuário não autenticado.",
+        });
+      }
+
+      const contatos = await ContatoWhatsappModel.buscarTodosContatos(usuarioId);
+
+      if (!contatos.length) {
+        return res.status(200).json([]);
+      }
+
+      return res.status(200).json(contatos);
+    } catch (error) {
+      console.error("Erro ao buscar contatos:", error);
+      return res.status(500).json({
+        error: true,
+        message: "Erro interno ao buscar contatos.",
+      });
+    }
+  }
 }
 
 export default new ContatoWhatsappController();
