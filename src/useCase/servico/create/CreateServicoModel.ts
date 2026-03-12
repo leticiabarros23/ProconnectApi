@@ -37,6 +37,7 @@ class CreateServicoModel {
         preco: true,
         categoria: true,
         usuario: { select: usuarioSelect },
+        portfolio: true,
       },
     });
   }
@@ -66,6 +67,7 @@ class CreateServicoModel {
         localizacao: true,
         preco: true,
         avaliacao: true,
+        portfolio: true,
       },
     });
   }
@@ -79,6 +81,7 @@ class CreateServicoModel {
         localizacao: true,
         preco: true,
         avaliacao: true,
+        portfolio: true,
       },
     });
   }
@@ -91,6 +94,7 @@ class CreateServicoModel {
         preco: true,
         avaliacao: true,
         localizacao: true,
+        portfolio: true,
       },
     });
   }
@@ -140,6 +144,7 @@ class CreateServicoModel {
     return prisma.$transaction([
       prisma.preco.deleteMany({ where: { servicoId: id } }),
       prisma.avaliacao.deleteMany({ where: { servicoId: id } }),
+      prisma.portfolio.deleteMany({ where: { servicoId: id } }),
       prisma.servico.delete({ where: { id } }),
     ]);
   }
