@@ -53,7 +53,6 @@ model Servico {
   servicosRealizados ServicoRealizado[] 
   contatosWhatsapp ContatoWhatsapp[]
   portfolio Portfolio[]
-
 }
 
 model Categoria {

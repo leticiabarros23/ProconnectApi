@@ -9,6 +9,15 @@ class PortfolioModel {
     nomeArquivo: string,
     mimeType: string
   ) {
+    // Verifica o limite de 6 fotos por serviço
+    const totalFotos = await prisma.portfolio.count({
+      where: { servicoId, usuarioId },
+    });
+
+    if (totalFotos >= 6) {
+      throw new Error("Limite de 6 fotos por portfólio atingido.");
+    }
+
     // Upload para o Supabase Storage
     const { data, error } = await supabase.storage
       .from("portfolio")
@@ -41,25 +50,25 @@ class PortfolioModel {
     });
   }
 
-async deletarFoto(id: number, usuarioId: number) {
-  const foto = await prisma.portfolio.findUnique({ where: { id } });
+  async deletarFoto(id: number, usuarioId: number) {
+    const foto = await prisma.portfolio.findUnique({ where: { id } });
 
-  if (!foto) throw new Error("Foto não encontrada.");
-  if (foto.usuarioId !== usuarioId) throw new Error("Esta foto não pertence a você.");
+    if (!foto) throw new Error("Foto não encontrada.");
+    if (foto.usuarioId !== usuarioId) throw new Error("Esta foto não pertence a você.");
 
-  // Extrai e decodifica o caminho da imagem da URL
-  const path = decodeURIComponent(foto.url.split("/portfolio/")[1]);
-  
-  console.log("Path para deletar:", path);
+    // Extrai e decodifica o caminho da imagem da URL
+    const path = decodeURIComponent(foto.url.split("/portfolio/")[1]);
 
-  // Deleta do Supabase Storage
-  const { error } = await supabase.storage.from("portfolio").remove([path]);
-  
-  if (error) console.error("Erro ao deletar do Storage:", error);
+    console.log("Path para deletar:", path);
 
-  // Deleta do banco
-  return prisma.portfolio.delete({ where: { id } });
- }
+    // Deleta do Supabase Storage
+    const { error } = await supabase.storage.from("portfolio").remove([path]);
+
+    if (error) console.error("Erro ao deletar do Storage:", error);
+
+    // Deleta do banco
+    return prisma.portfolio.delete({ where: { id } });
+  }
 }
 
 export default new PortfolioModel();

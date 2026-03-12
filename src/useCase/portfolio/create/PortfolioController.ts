@@ -35,6 +35,10 @@ class PortfolioController {
 
       return res.status(201).json(foto);
     } catch (error: any) {
+      // Trata o erro de limite de fotos
+      if (error.message.includes("Limite de 6 fotos")) {
+        return res.status(400).json({ error: true, message: error.message });
+      }
       console.error("Erro ao fazer upload:", error);
       return res.status(500).json({ error: true, message: error.message });
     }
