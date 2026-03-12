@@ -1,4 +1,4 @@
-import prisma from "../../../lib/prisma"; // ✅ correto
+import prisma from "../../../lib/prisma";
 
 class CreateAvaliacaoModel {
   // Criar avaliação
@@ -58,28 +58,28 @@ class CreateAvaliacaoModel {
 
   // Verificar se o usuário já avaliou o serviço
   async verificarAvaliacaoExistente(usuarioId: number, servicoId: number) {
-  const avaliacao = await prisma.avaliacao.findFirst({
-    where: { usuarioId, servicoId },
-  });
-  return !!avaliacao;
+    const avaliacao = await prisma.avaliacao.findFirst({
+      where: { usuarioId, servicoId },
+    });
+    return !!avaliacao;
   }
 
   // Contar avaliações por estrela
   async getContagemEstrelas(servicoId: number) {
-  const contagem = await prisma.avaliacao.groupBy({
-    by: ["star"],
-    where: { servicoId },
-    _count: { star: true },
-    orderBy: { star: "desc" },
-  });
+    const contagem = await prisma.avaliacao.groupBy({
+      by: ["star"],
+      where: { servicoId },
+      _count: { star: true },
+      orderBy: { star: "desc" },
+    });
 
-  // Garante que todas as estrelas aparecem mesmo sem avaliação
-  const resultado: Record<number, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-  contagem.forEach((item) => {
-    resultado[item.star] = item._count.star;
-  });
+    // Garante que todas as estrelas aparecem mesmo sem avaliação
+    const resultado: Record<number, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    contagem.forEach((item: { star: number; _count: { star: number } }) => {
+      resultado[item.star] = item._count.star;
+    });
 
-  return resultado;
+    return resultado;
   }
 }
 
