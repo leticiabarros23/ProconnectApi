@@ -25,4 +25,10 @@ servicoRoutes.patch(
   CreateServicoController.uploadImagem
 );
 
+servicoRoutes.delete(
+  "/servico/:id/imagem",
+  authenticate,
+  CreateServicoController.deletarImagem
+);
+
 export default servicoRoutes;

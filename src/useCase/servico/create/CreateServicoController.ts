@@ -226,6 +226,40 @@ class CreateServicoController {
     return res.status(500).json({ error: true, message: "Erro interno do servidor." });
    }
   }
+
+  static async deletarImagem(req: Request, res: Response) {
+  try {
+    const usuarioId = req.user?.id;
+    const { id } = req.params;
+
+    if (!usuarioId) {
+      return res.status(401).json({ error: true, message: "Não autenticado." });
+    }
+
+    const servico = await CreateServicoModel.findServicoById(Number(id));
+
+    if (!servico) {
+      return res.status(404).json({ error: true, message: "Serviço não encontrado." });
+    }
+
+    if (servico.usuarioId !== usuarioId) {
+      return res.status(403).json({ error: true, message: "Este serviço não pertence a você." });
+    }
+
+    if (!servico.imagem) {
+      return res.status(404).json({ error: true, message: "Nenhuma imagem encontrada para este serviço." });
+    }
+
+    const path = decodeURIComponent(servico.imagem.split("/servicos/")[1]);
+    await supabase.storage.from("servicos").remove([path]);
+
+    const servicoAtualizado = await CreateServicoModel.updateServico(Number(id), usuarioId, { imagem: null });
+    return res.status(200).json(servicoAtualizado);
+  } catch (err: any) {
+    console.error("Erro ao deletar imagem:", err);
+    return res.status(500).json({ error: true, message: "Erro interno do servidor." });
+   }
+  }
 }
 
 export default CreateServicoController;

@@ -27,6 +27,12 @@ usuarioRoutes.patch(
   CreateUsuarioController.uploadImagem
 );
 
+usuarioRoutes.delete(
+  "/usuario/me/imagem",
+  authenticate,
+  CreateUsuarioController.deletarImagem
+);
+
 usuarioRoutes.delete("/usuario/:id", authenticate, CreateUsuarioController.deleteUsuario);
 
 export default usuarioRoutes;

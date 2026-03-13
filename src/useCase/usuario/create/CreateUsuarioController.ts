@@ -155,6 +155,31 @@ class CreateUsuarioController {
     return res.status(500).json({ error: true, message: "Erro interno do servidor." });
   }
  }
+
+async deletarImagem(req: Request, res: Response) {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: true, message: "Não autenticado." });
+    }
+
+    const usuario = await CreateUsuarioModel.getUsuarioModel(userId);
+
+    if (!usuario?.imagem) {
+      return res.status(404).json({ error: true, message: "Nenhuma foto de perfil encontrada." });
+    }
+
+    const path = decodeURIComponent(usuario.imagem.split("/usuarios/")[1]);
+    await supabase.storage.from("usuarios").remove([path]);
+
+    const usuarioAtualizado = await CreateUsuarioModel.updateUsuarioModel(userId, { imagem: null });
+    return res.status(200).json(usuarioAtualizado);
+  } catch (err: any) {
+    console.error("Erro ao deletar imagem:", err);
+    return res.status(500).json({ error: true, message: "Erro interno do servidor." });
+    }
+  }
 }
 
 export default new CreateUsuarioController();
