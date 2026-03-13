@@ -258,6 +258,7 @@ class CreateServicoController {
   } catch (err: any) {
     console.error("Erro ao deletar imagem:", err);
     return res.status(500).json({ error: true, message: "Erro interno do servidor." });
+    
    }
   }
 }
