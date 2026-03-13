@@ -17,6 +17,7 @@ model Usuario {
   cidade    String
   endereco  String
   senha     String
+  imagem    String?  
   criadoEm  DateTime    @default(now())
   avaliacao Avaliacao[]
   servicos  Servico[]

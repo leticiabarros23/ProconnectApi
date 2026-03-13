@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import CreateUsuarioModel from "./CreateUsuarioModel";
 import { hash } from "bcryptjs";
+import { supabase } from "../../../lib/supabase";
 
 // Função de validação de senha forte
 function validarSenhaForte(senha: string): string | null {
@@ -116,6 +117,44 @@ class CreateUsuarioController {
       return res.status(500).json({ error: true, message: err.message });
     }
   }
+
+  async uploadImagem(req: Request, res: Response) {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: true, message: "Não autenticado." });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: true, message: "Nenhuma imagem enviada." });
+    }
+
+    const nomeArquivo = `${userId}/${Date.now()}-${req.file.originalname}`;
+
+    const { data, error } = await supabase.storage
+      .from("usuarios")
+      .upload(nomeArquivo, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: true,
+      });
+
+    if (error) {
+      return res.status(500).json({ error: true, message: "Erro ao fazer upload da imagem." });
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("usuarios")
+      .getPublicUrl(data.path);
+
+    const usuario = await CreateUsuarioModel.uploadImagemUsuario(userId, urlData.publicUrl);
+
+    return res.status(200).json(usuario);
+  } catch (err: any) {
+    console.error("Erro ao fazer upload da imagem:", err);
+    return res.status(500).json({ error: true, message: "Erro interno do servidor." });
+  }
+ }
 }
 
 export default new CreateUsuarioController();

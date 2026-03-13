@@ -1,4 +1,17 @@
-import  prisma  from "../../../lib/prisma";
+import prisma from "../../../lib/prisma";
+import { supabase } from "../../../lib/supabase";
+
+const usuarioSelect = {
+  id: true,
+  nome: true,
+  email: true,
+  telefone: true,
+  estado: true,
+  cidade: true,
+  endereco: true,
+  imagem: true,
+  criadoEm: true,
+};
 
 class CreateUsuarioModel {
   async createUsuarioModel(
@@ -13,16 +26,7 @@ class CreateUsuarioModel {
     try {
       return await prisma.usuario.create({
         data: { nome, email, telefone, estado, cidade, endereco, senha },
-        select: {
-          id: true,
-          nome: true,
-          email: true,
-          telefone: true,
-          estado: true,
-          cidade: true,
-          endereco: true,
-          criadoEm: true,
-        },
+        select: usuarioSelect,
       });
     } catch (error: any) {
       console.error("Erro no Model ao criar usuário:", error);
@@ -45,16 +49,7 @@ class CreateUsuarioModel {
     try {
       return await prisma.usuario.findUnique({
         where: { id },
-        select: {
-          id: true,
-          nome: true,
-          email: true,
-          telefone: true,
-          estado: true,
-          cidade: true,
-          endereco: true,
-          criadoEm: true,
-        },
+        select: usuarioSelect,
       });
     } catch (error) {
       console.error("Erro no Model ao buscar usuário:", error);
@@ -67,15 +62,7 @@ class CreateUsuarioModel {
       return await prisma.usuario.update({
         where: { id },
         data: dados,
-        select: {
-          id: true,
-          nome: true,
-          email: true,
-          telefone: true,
-          estado: true,
-          cidade: true,
-          endereco: true,
-        },
+        select: usuarioSelect,
       });
     } catch (error) {
       console.error("Erro no Model ao atualizar usuário:", error);
@@ -90,6 +77,24 @@ class CreateUsuarioModel {
       console.error("Erro no Model ao deletar usuário:", error);
       throw new Error("Erro ao deletar usuário no banco de dados");
     }
+  }
+
+  async uploadImagemUsuario(id: number, imageUrl: string) {
+    const usuario = await prisma.usuario.findUnique({ where: { id } });
+
+    if (!usuario) throw new Error("Usuário não encontrado.");
+
+    // Se já tinha imagem, deleta do storage antes
+    if (usuario.imagem) {
+      const path = decodeURIComponent(usuario.imagem.split("/usuarios/")[1]);
+      await supabase.storage.from("usuarios").remove([path]);
+    }
+
+    return prisma.usuario.update({
+      where: { id },
+      data: { imagem: imageUrl },
+      select: usuarioSelect,
+    });
   }
 }
 
