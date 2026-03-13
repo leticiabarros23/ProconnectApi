@@ -12,7 +12,7 @@ import servicoRealizadoRoutes from "./routes/servicoRealizadoRoutes";
 import contatoWhatsappRoutes from "./routes/contatoWhatsappRoutes";
 import segmentoRoutes from "./routes/segmentoRoutes";
 import portfolioRoutes from "./routes/portfolioRoutes";
-
+import favoritoRoutes from "./routes/favoritoRoutes";
 
 dotenv.config();
 
@@ -61,7 +61,7 @@ app.use(servicoRealizadoRoutes);
 app.use(contatoWhatsappRoutes);
 app.use(segmentoRoutes);
 app.use(portfolioRoutes);
-
+app.use(favoritoRoutes);
 
 app.get('/',(req,res)=>{
   res.status(200).send('<h1>Está Online</h1>')
