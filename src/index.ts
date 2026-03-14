@@ -1,6 +1,7 @@
 import express,{Request,Response,NextFunction} from 'express'
 import dotenv from "dotenv";
 import cors from 'cors';
+import helmet from 'helmet';
 import usuarioRoutes from './routes/usuarioRoutes';
 import servicoRoutes from './routes/servicoRoutes';
 import localizacaoRoutes from './routes/localizacaoRoutes';
@@ -20,9 +21,10 @@ dotenv.config();
 const app = express()
 const port = process.env.PORT || 3333
 
+app.use(helmet());
+
 const allowedOrigins = [
     "https://pro-connect-ten.vercel.app", // EM PRODUÇÂO
-    // "https://pro-connect-git-main-leticias-projects-caf83cc5.vercel.app",
     "http://localhost:3000",
     "http://127.0.0.1:3000"
    ];
