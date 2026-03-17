@@ -180,6 +180,20 @@ async deletarImagem(req: Request, res: Response) {
     return res.status(500).json({ error: true, message: "Erro interno do servidor." });
     }
   }
+
+  async updateMe(req: Request, res: Response) {
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ error: true, message: "Não autenticado." });
+
+  try {
+    const usuario = await CreateUsuarioModel.updateUsuarioModel(userId, req.body);
+    return res.json(usuario);
+  } catch (err: any) {
+    console.error("Erro ao atualizar usuário:", err);
+    return res.status(500).json({ error: true, message: err.message });
+  }
+}
+
 }
 
 export default new CreateUsuarioController();

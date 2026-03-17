@@ -35,4 +35,6 @@ usuarioRoutes.delete(
 
 usuarioRoutes.delete("/usuario/:id", authenticate, CreateUsuarioController.deleteUsuario);
 
+usuarioRoutes.put("/usuario/me", authenticate, CreateUsuarioController.updateMe);
+
 export default usuarioRoutes;

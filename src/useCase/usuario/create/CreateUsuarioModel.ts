@@ -10,6 +10,7 @@ const usuarioSelect = {
   cidade: true,
   endereco: true,
   imagem: true,
+  disponivel: true,
   criadoEm: true,
 };
 
