@@ -204,6 +204,7 @@ class CreateServicoController {
       });
 
     if (error) {
+      console.error("Erro Supabase upload:", error);
       return res.status(500).json({ error: true, message: "Erro ao fazer upload da imagem." });
     }
 
