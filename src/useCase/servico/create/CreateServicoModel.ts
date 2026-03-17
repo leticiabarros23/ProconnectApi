@@ -11,6 +11,7 @@ const usuarioSelect = {
   cidade: true,
   endereco: true,
   criadoEm: true,
+  disponivel: true,
 };
 
 class CreateServicoModel {
@@ -60,7 +61,7 @@ class CreateServicoModel {
         ...(filtroSegmento ? { categoria: { segmentoId: filtroSegmento } } : {}),
         ...(filtroNomeProfissional ? { usuario: { nome: { contains: filtroNomeProfissional, mode: "insensitive" } } } : {}),
         ...(filtroNomeNegocio ? { nomeNegocio: { contains: filtroNomeNegocio, mode: "insensitive" } } : {}),
-        ...(filtroDisponivel !== undefined ? { disponivel: filtroDisponivel } : {}),
+        ...(filtroDisponivel !== undefined ? { usuario: { disponivel: filtroDisponivel } } : {}),
       },
       include: {
         usuario: { select: usuarioSelect },
