@@ -18,6 +18,7 @@ model Usuario {
   endereco  String
   senha     String
   imagem    String?  
+  disponivel Boolean @default(true)
   criadoEm  DateTime    @default(now())
   avaliacao Avaliacao[]
   servicos  Servico[]
