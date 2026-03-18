@@ -145,7 +145,8 @@ async deleteServico(id: number, usuarioId: number) {
 
   return prisma.$transaction([
     prisma.servicoRealizado.deleteMany({ where: { servicoId: id } }), 
-    prisma.contatoWhatsapp.deleteMany({ where: { servicoId: id } }),  
+    prisma.contatoWhatsapp.deleteMany({ where: { servicoId: id } }), 
+    prisma.favorito.deleteMany({ where: { servicoId: id } }),  
     prisma.preco.deleteMany({ where: { servicoId: id } }),
     prisma.avaliacao.deleteMany({ where: { servicoId: id } }),
     prisma.portfolio.deleteMany({ where: { servicoId: id } }),
