@@ -133,23 +133,25 @@ class CreateServicoModel {
     });
   }
 
-  async deleteServico(id: number, usuarioId: number) {
-    const servico = await prisma.servico.findUnique({ where: { id } });
+async deleteServico(id: number, usuarioId: number) {
+  const servico = await prisma.servico.findUnique({ where: { id } });
 
-    if (!servico) {
-      throw new Error("Serviço não encontrado.");
-    }
-    if (servico.usuarioId !== usuarioId) {
-      throw new Error("Este serviço não pertence a você.");
-    }
-
-    return prisma.$transaction([
-      prisma.preco.deleteMany({ where: { servicoId: id } }),
-      prisma.avaliacao.deleteMany({ where: { servicoId: id } }),
-      prisma.portfolio.deleteMany({ where: { servicoId: id } }),
-      prisma.servico.delete({ where: { id } }),
-    ]);
+  if (!servico) {
+    throw new Error("Serviço não encontrado.");
   }
+  if (servico.usuarioId !== usuarioId) {
+    throw new Error("Este serviço não pertence a você.");
+  }
+
+  return prisma.$transaction([
+    prisma.servicoRealizado.deleteMany({ where: { servicoId: id } }), 
+    prisma.contatoWhatsapp.deleteMany({ where: { servicoId: id } }),  
+    prisma.preco.deleteMany({ where: { servicoId: id } }),
+    prisma.avaliacao.deleteMany({ where: { servicoId: id } }),
+    prisma.portfolio.deleteMany({ where: { servicoId: id } }),
+    prisma.servico.delete({ where: { id } }),
+  ]);
+}
 
   async uploadImagemServico(id: number, usuarioId: number, imageUrl: string) {
   const servico = await prisma.servico.findUnique({ where: { id } });
