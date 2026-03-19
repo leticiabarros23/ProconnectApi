@@ -1,4 +1,4 @@
-import prisma from "../../lib/prisma";
+import prisma from "../../../lib/prisma";
 
 export class ChatModel {
   // 1. Procurar ou criar uma conversa entre dois utilizadores

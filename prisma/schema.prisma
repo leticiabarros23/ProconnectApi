@@ -26,8 +26,6 @@ model Usuario {
   contatosWhatsapp   ContatoWhatsapp[]
   portfolio          Portfolio[]
   favoritos          Favorito[]
-  
-  // Relações do Chat
   conversasComoCliente      Conversa[] @relation("ClienteConversas")
   conversasComoProfissional Conversa[] @relation("ProfissionalConversas")
   mensagensEnviadas         Mensagem[]
@@ -156,28 +154,23 @@ model Favorito {
   @@unique([usuarioId, servicoId])
 }
 
-// Uma conversa liga um Cliente a um Profissional
 model Conversa {
-  id             String     @id @default(uuid()) // Mantemos String UUID porque é melhor para IDs de "Salas de Chat"
-  clienteId      Int        // CORRIGIDO PARA INT
-  profissionalId Int        // CORRIGIDO PARA INT
+  id             String     @id @default(uuid())
+  clienteId      Int        
+  profissionalId Int        
   criadaEm       DateTime   @default(now())
-
-  // Relações
   cliente        Usuario    @relation("ClienteConversas", fields: [clienteId], references: [id])
   profissional   Usuario    @relation("ProfissionalConversas", fields: [profissionalId], references: [id])
   mensagens      Mensagem[]
+  @@unique([clienteId, profissionalId])
 }
 
-// Cada mensagem pertence a uma conversa e tem um remetente
 model Mensagem {
   id          String   @id @default(uuid())
   texto       String
-  remetenteId Int      // CORRIGIDO PARA INT
-  conversaId  String   // Mantém String porque o id de Conversa é String
+  remetenteId Int      
+  conversaId  String   
   criadaEm    DateTime @default(now())
-
-  // Relações
   conversa    Conversa @relation(fields: [conversaId], references: [id])
   remetente   Usuario  @relation(fields: [remetenteId], references: [id])
 }

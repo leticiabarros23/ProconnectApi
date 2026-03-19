@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ChatController } from "../useCase/chat/ChatController";
+import { ChatController } from "../useCase/chat/create/ChatController";
 
 const router = Router();
 const chatController = new ChatController();
