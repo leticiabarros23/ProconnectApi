@@ -7,26 +7,30 @@ datasource db {
   provider = "postgresql"
 }
 
-
 model Usuario {
-  id        Int         @id @default(autoincrement())
-  nome      String
-  email     String      @unique
-  telefone  String
-  estado    String
-  cidade    String
-  endereco  String
-  senha     String
-  imagem    String?  
-  disponivel Boolean @default(true)
-  criadoEm  DateTime    @default(now())
-  avaliacao Avaliacao[]
-  servicos  Servico[]
-  resetTokens ResetToken[]
+  id                 Int                @id @default(autoincrement())
+  nome               String
+  email              String             @unique
+  telefone           String
+  estado             String
+  cidade             String
+  endereco           String
+  senha              String
+  imagem             String?  
+  disponivel         Boolean            @default(true)
+  criadoEm           DateTime           @default(now())
+  avaliacao          Avaliacao[]
+  servicos           Servico[]
+  resetTokens        ResetToken[]
   servicosRealizados ServicoRealizado[] 
-  contatosWhatsapp ContatoWhatsapp[]
-  portfolio Portfolio[]
-  favoritos Favorito[]
+  contatosWhatsapp   ContatoWhatsapp[]
+  portfolio          Portfolio[]
+  favoritos          Favorito[]
+  
+  // Relações do Chat
+  conversasComoCliente      Conversa[] @relation("ClienteConversas")
+  conversasComoProfissional Conversa[] @relation("ProfissionalConversas")
+  mensagensEnviadas         Mensagem[]
 }
 
 model Localizacao {
@@ -40,24 +44,24 @@ model Localizacao {
 }
 
 model Servico {
-  id            Int          @id @default(autoincrement())
-  nomeNegocio   String
-  descricao     String
-  imagem        String?
-  disponivel    Boolean      @default(true) // true = disponível, false = indisponível
-  usuarioId     Int
-  categoriaId   Int?
-  localizacaoId Int?
-  criadoEm      DateTime     @default(now())
-  avaliacao     Avaliacao[]
-  preco         Preco[]
-  categoria     Categoria?   @relation(fields: [categoriaId], references: [id])
-  localizacao   Localizacao? @relation(fields: [localizacaoId], references: [id])
-  usuario       Usuario      @relation(fields: [usuarioId], references: [id])
+  id                 Int                @id @default(autoincrement())
+  nomeNegocio        String
+  descricao          String
+  imagem             String?
+  disponivel         Boolean            @default(true) // true = disponível, false = indisponível
+  usuarioId          Int
+  categoriaId        Int?
+  localizacaoId      Int?
+  criadoEm           DateTime           @default(now())
+  avaliacao          Avaliacao[]
+  preco              Preco[]
+  categoria          Categoria?         @relation(fields: [categoriaId], references: [id])
+  localizacao        Localizacao?       @relation(fields: [localizacaoId], references: [id])
+  usuario            Usuario            @relation(fields: [usuarioId], references: [id])
   servicosRealizados ServicoRealizado[] 
-  contatosWhatsapp ContatoWhatsapp[]
-  portfolio Portfolio[]
-  favoritos Favorito[]
+  contatosWhatsapp   ContatoWhatsapp[]
+  portfolio          Portfolio[]
+  favoritos          Favorito[]
 }
 
 model Categoria {
@@ -108,8 +112,8 @@ model ServicoRealizado {
   confirmado   Boolean?  
   respondidoEm DateTime? 
   realizadoEm  DateTime  @default(now())
-  usuario Usuario @relation(fields: [usuarioId], references: [id])
-  servico Servico @relation(fields: [servicoId], references: [id])
+  usuario      Usuario   @relation(fields: [usuarioId], references: [id])
+  servico      Servico   @relation(fields: [servicoId], references: [id])
   @@unique([usuarioId, servicoId])
 }
 
@@ -119,8 +123,8 @@ model ContatoWhatsapp {
   servicoId  Int
   clicadoEm  DateTime @default(now())
   perguntado Boolean  @default(false) // true = já exibiu o modal de confirmação
-  usuario Usuario @relation(fields: [usuarioId], references: [id])
-  servico Servico @relation(fields: [servicoId], references: [id])
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id])
+  servico    Servico  @relation(fields: [servicoId], references: [id])
   @@unique([usuarioId, servicoId])
 }
 
@@ -150,4 +154,30 @@ model Favorito {
   usuario   Usuario  @relation(fields: [usuarioId], references: [id])
   servico   Servico  @relation(fields: [servicoId], references: [id])
   @@unique([usuarioId, servicoId])
+}
+
+// Uma conversa liga um Cliente a um Profissional
+model Conversa {
+  id             String     @id @default(uuid()) // Mantemos String UUID porque é melhor para IDs de "Salas de Chat"
+  clienteId      Int        // CORRIGIDO PARA INT
+  profissionalId Int        // CORRIGIDO PARA INT
+  criadaEm       DateTime   @default(now())
+
+  // Relações
+  cliente        Usuario    @relation("ClienteConversas", fields: [clienteId], references: [id])
+  profissional   Usuario    @relation("ProfissionalConversas", fields: [profissionalId], references: [id])
+  mensagens      Mensagem[]
+}
+
+// Cada mensagem pertence a uma conversa e tem um remetente
+model Mensagem {
+  id          String   @id @default(uuid())
+  texto       String
+  remetenteId Int      // CORRIGIDO PARA INT
+  conversaId  String   // Mantém String porque o id de Conversa é String
+  criadaEm    DateTime @default(now())
+
+  // Relações
+  conversa    Conversa @relation(fields: [conversaId], references: [id])
+  remetente   Usuario  @relation(fields: [remetenteId], references: [id])
 }
