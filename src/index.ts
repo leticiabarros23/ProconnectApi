@@ -2,15 +2,13 @@ import express, { Request, Response, NextFunction } from 'express';
 import dotenv from "dotenv";
 import cors from 'cors';
 import helmet from 'helmet';
-
-// 1. Importações do Socket.IO e HTTP
 import http from 'http';
 import { Server } from 'socket.io';
+import jwt, { JwtPayload } from "jsonwebtoken"; 
 
-// Importação do SEU Prisma configurado
 import prisma from './lib/prisma';
 
-// Importação das rotas
+
 import usuarioRoutes from './routes/usuarioRoutes';
 import servicoRoutes from './routes/servicoRoutes';
 import localizacaoRoutes from './routes/localizacaoRoutes';
@@ -30,13 +28,12 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3333;
 
-// 2. Criar o servidor HTTP a partir do Express (Obrigatório para Socket.IO)
 const server = http.createServer(app);
 
 app.use(helmet());
 
 const allowedOrigins = [
-  "https://pro-connect-ten.vercel.app", // Produção
+  "https://pro-connect-ten.vercel.app",
   "http://localhost:3000",
   "http://127.0.0.1:3000"
 ];
@@ -63,7 +60,7 @@ app.options("*", (req, res) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Suas rotas normais da API
+// Rotas da API
 app.use(categoriaRoutes);
 app.use(localizacaoRoutes);
 app.use(servicoRoutes);
@@ -82,7 +79,10 @@ app.get('/', (req, res) => {
   res.status(200).send('<h1>A API e o Chat estão Online! 🚀</h1>');
 });
 
-// 3. Configurar o Servidor de WebSockets (Socket.IO)
+// ============================================================
+// SOCKET.IO — CONFIGURAÇÃO E AUTENTICAÇÃO
+// ============================================================
+
 const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
@@ -91,41 +91,102 @@ const io = new Server(server, {
   }
 });
 
-// 4. Lógica do Chat em Tempo Real
-io.on("connection", (socket) => {
-  console.log(`🔌 Novo utilizador conectado: ${socket.id}`);
+// Middleware de autenticação — roda antes de qualquer conexão ser aceite
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
 
-  socket.on("entrar_conversa", (conversaId) => {
+  if (!token) {
+    return next(new Error("Não autorizado: token em falta."));
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+
+    if (
+      typeof decoded !== "object" ||
+      typeof decoded.sub !== "number" ||
+      typeof decoded.email !== "string"
+    ) {
+      throw new Error();
+    }
+
+    // Guarda o utilizador na sessão do socket — igual ao req.user do Express
+    socket.data.user = { id: decoded.sub, email: decoded.email };
+    next();
+  } catch {
+    return next(new Error("Não autorizado: token inválido ou expirado."));
+  }
+});
+
+// Lógica do chat em tempo real
+io.on("connection", (socket) => {
+  const userId: number = socket.data.user.id; // Sempre do JWT, nunca do frontend
+  console.log(`🔌 Utilizador autenticado conectado: ${userId}`);
+
+  // Entrar numa conversa com validação de pertencimento
+  socket.on("entrar_conversa", async (conversaId: string) => {
+    const conversa = await prisma.conversa.findFirst({
+      where: {
+        id: conversaId,
+        OR: [{ clienteId: userId }, { profissionalId: userId }],
+      },
+    });
+
+    if (!conversa) {
+      return socket.emit("erro", "Não tens permissão para aceder a este chat.");
+    }
+
     socket.join(conversaId);
-    console.log(`Utilizador entrou na conversa: ${conversaId}`);
+    console.log(`✅ Utilizador ${userId} entrou na conversa ${conversaId}`);
   });
 
-  socket.on("enviar_mensagem", async (dados) => {
-    const { conversaId, remetenteId, texto } = dados;
+  // Enviar mensagem — remetenteId vem do JWT, nunca do frontend
+  socket.on("enviar_mensagem", async (dados, callback) => {
+    const { conversaId, texto } = dados; // remetenteId ignorado intencionalmente
 
     try {
-      // Usa a sua instância centralizada do Prisma para gravar a mensagem
+      // Verifica pertencimento antes de gravar
+      const conversa = await prisma.conversa.findFirst({
+        where: {
+          id: conversaId,
+          OR: [{ clienteId: userId }, { profissionalId: userId }],
+        },
+      });
+
+      if (!conversa) {
+        return callback?.({ status: "error", error: "Acesso negado." });
+      }
+
+      // Grava na BD primeiro, emite depois
       const novaMensagem = await prisma.mensagem.create({
         data: {
           texto,
-          remetenteId: Number(remetenteId),
-          conversaId
-        }
+          remetenteId: userId, // Do JWT — nunca do frontend
+          conversaId,
+        },
       });
 
-      io.to(conversaId).emit("nova_mensagem", novaMensagem);
-      
+      // Emite para os outros na sala (não para quem enviou)
+      socket.to(conversaId).emit("nova_mensagem", novaMensagem);
+
+      // Confirma ao remetente que foi gravado (Acknowledgement)
+      callback?.({ status: "ok", mensagem: novaMensagem });
+
     } catch (error) {
       console.error("Erro ao gravar mensagem:", error);
+      callback?.({ status: "error", error: "Erro ao guardar a mensagem." });
     }
   });
 
   socket.on("disconnect", () => {
-    console.log(`🔴 Utilizador desconectado: ${socket.id}`);
+    console.log(`🔴 Utilizador ${userId} desconectado`);
   });
 });
 
-// Middleware de erros
+// ============================================================
+// MIDDLEWARE DE ERROS
+// ============================================================
+
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   console.error("Erro interno:", error);
   res.status(500).json({
@@ -134,7 +195,10 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-// 5. ATENÇÃO: Usar `server.listen` no lugar de `app.listen`
+// ============================================================
+// INICIAR SERVIDOR
+// ============================================================
+
 server.listen(port, () => {
   console.log(`🚀 Servidor HTTP e WebSockets online na porta http://localhost:${port}`);
 });
