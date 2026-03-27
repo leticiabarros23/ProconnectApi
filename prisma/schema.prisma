@@ -16,7 +16,8 @@ model Usuario {
   cidade             String
   endereco           String
   senha              String
-  imagem             String?  
+  imagem             String? 
+  fcmToken           String?  
   disponivel         Boolean            @default(true)
   criadoEm           DateTime           @default(now())
   avaliacao          Avaliacao[]

@@ -3,7 +3,6 @@ import CreateUsuarioModel from "./CreateUsuarioModel";
 import { hash } from "bcryptjs";
 import { supabase } from "../../../lib/supabase";
 
-// Função de validação de senha forte
 function validarSenhaForte(senha: string): string | null {
   if (senha.length < 8) return "A senha deve ter no mínimo 8 caracteres.";
   if (!/[A-Z]/.test(senha)) return "A senha deve ter pelo menos 1 letra maiúscula.";
@@ -20,7 +19,6 @@ class CreateUsuarioController {
       return res.status(400).json({ error: true, message: "Todos os campos são obrigatórios." });
     }
 
-    // Validação de senha forte
     const erroSenha = validarSenhaForte(senha);
     if (erroSenha) {
       return res.status(400).json({ error: true, message: erroSenha });
@@ -86,7 +84,6 @@ class CreateUsuarioController {
       const dadosParaAtualizar: any = { nome, email, telefone, estado, cidade, endereco };
 
       if (senha && senha.trim() !== "") {
-        // Validação de senha forte ao atualizar também
         const erroSenha = validarSenhaForte(senha);
         if (erroSenha) {
           return res.status(400).json({ error: true, message: erroSenha });
@@ -119,81 +116,97 @@ class CreateUsuarioController {
   }
 
   async uploadImagem(req: Request, res: Response) {
-  try {
-    const userId = req.user?.id;
+    try {
+      const userId = req.user?.id;
 
-    if (!userId) {
-      return res.status(401).json({ error: true, message: "Não autenticado." });
+      if (!userId) {
+        return res.status(401).json({ error: true, message: "Não autenticado." });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ error: true, message: "Nenhuma imagem enviada." });
+      }
+
+      const nomeArquivo = `${userId}/${Date.now()}-${req.file.originalname}`;
+
+      const { data, error } = await supabase.storage
+        .from("usuarios")
+        .upload(nomeArquivo, req.file.buffer, {
+          contentType: req.file.mimetype,
+          upsert: true,
+        });
+
+      if (error) {
+        return res.status(500).json({ error: true, message: "Erro ao fazer upload da imagem." });
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("usuarios")
+        .getPublicUrl(data.path);
+
+      const usuario = await CreateUsuarioModel.uploadImagemUsuario(userId, urlData.publicUrl);
+
+      return res.status(200).json(usuario);
+    } catch (err: any) {
+      console.error("Erro ao fazer upload da imagem:", err);
+      return res.status(500).json({ error: true, message: "Erro interno do servidor." });
     }
-
-    if (!req.file) {
-      return res.status(400).json({ error: true, message: "Nenhuma imagem enviada." });
-    }
-
-    const nomeArquivo = `${userId}/${Date.now()}-${req.file.originalname}`;
-
-    const { data, error } = await supabase.storage
-      .from("usuarios")
-      .upload(nomeArquivo, req.file.buffer, {
-        contentType: req.file.mimetype,
-        upsert: true,
-      });
-
-    if (error) {
-      return res.status(500).json({ error: true, message: "Erro ao fazer upload da imagem." });
-    }
-
-    const { data: urlData } = supabase.storage
-      .from("usuarios")
-      .getPublicUrl(data.path);
-
-    const usuario = await CreateUsuarioModel.uploadImagemUsuario(userId, urlData.publicUrl);
-
-    return res.status(200).json(usuario);
-  } catch (err: any) {
-    console.error("Erro ao fazer upload da imagem:", err);
-    return res.status(500).json({ error: true, message: "Erro interno do servidor." });
   }
- }
 
-async deletarImagem(req: Request, res: Response) {
-  try {
-    const userId = req.user?.id;
+  async deletarImagem(req: Request, res: Response) {
+    try {
+      const userId = req.user?.id;
 
-    if (!userId) {
-      return res.status(401).json({ error: true, message: "Não autenticado." });
-    }
+      if (!userId) {
+        return res.status(401).json({ error: true, message: "Não autenticado." });
+      }
 
-    const usuario = await CreateUsuarioModel.getUsuarioModel(userId);
+      const usuario = await CreateUsuarioModel.getUsuarioModel(userId);
 
-    if (!usuario?.imagem) {
-      return res.status(404).json({ error: true, message: "Nenhuma foto de perfil encontrada." });
-    }
+      if (!usuario?.imagem) {
+        return res.status(404).json({ error: true, message: "Nenhuma foto de perfil encontrada." });
+      }
 
-    const path = decodeURIComponent(usuario.imagem.split("/usuarios/")[1]);
-    await supabase.storage.from("usuarios").remove([path]);
+      const path = decodeURIComponent(usuario.imagem.split("/usuarios/")[1]);
+      await supabase.storage.from("usuarios").remove([path]);
 
-    const usuarioAtualizado = await CreateUsuarioModel.updateUsuarioModel(userId, { imagem: null });
-    return res.status(200).json(usuarioAtualizado);
-  } catch (err: any) {
-    console.error("Erro ao deletar imagem:", err);
-    return res.status(500).json({ error: true, message: "Erro interno do servidor." });
+      const usuarioAtualizado = await CreateUsuarioModel.updateUsuarioModel(userId, { imagem: null });
+      return res.status(200).json(usuarioAtualizado);
+    } catch (err: any) {
+      console.error("Erro ao deletar imagem:", err);
+      return res.status(500).json({ error: true, message: "Erro interno do servidor." });
     }
   }
 
   async updateMe(req: Request, res: Response) {
-  const userId = req.user?.id;
-  if (!userId) return res.status(401).json({ error: true, message: "Não autenticado." });
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: true, message: "Não autenticado." });
 
-  try {
-    const usuario = await CreateUsuarioModel.updateUsuarioModel(userId, req.body);
-    return res.json(usuario);
-  } catch (err: any) {
-    console.error("Erro ao atualizar usuário:", err);
-    return res.status(500).json({ error: true, message: err.message });
+    try {
+      const usuario = await CreateUsuarioModel.updateUsuarioModel(userId, req.body);
+      return res.json(usuario);
+    } catch (err: any) {
+      console.error("Erro ao atualizar usuário:", err);
+      return res.status(500).json({ error: true, message: err.message });
+    }
   }
-}
 
+  // NOVO — salva o token FCM do dispositivo móvel
+  async atualizarFcmToken(req: Request, res: Response) {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: true, message: "Não autenticado." });
+
+    const { token } = req.body;
+    if (!token) return res.status(400).json({ error: true, message: "Token FCM é obrigatório." });
+
+    try {
+      await CreateUsuarioModel.updateUsuarioModel(userId, { fcmToken: token });
+      return res.status(200).json({ message: "Token FCM atualizado com sucesso." });
+    } catch (err: any) {
+      console.error("Erro ao atualizar token FCM:", err);
+      return res.status(500).json({ error: true, message: err.message });
+    }
+  }
 }
 
 export default new CreateUsuarioController();

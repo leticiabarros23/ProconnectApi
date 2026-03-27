@@ -20,6 +20,7 @@ usuarioRoutes.get("/usuario/:id", authenticate, CreateUsuarioController.getUsuar
 
 usuarioRoutes.put("/usuario/me", authenticate, CreateUsuarioController.updateMe); // ✅ antes do :id
 usuarioRoutes.put("/usuario/:id", authenticate, CreateUsuarioController.updateUsuario);
+usuarioRoutes.put("/usuarios/fcm-token", authenticate, CreateUsuarioController.atualizarFcmToken);
 
 usuarioRoutes.patch(
   "/usuario/me/imagem",
