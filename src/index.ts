@@ -7,7 +7,7 @@ import { Server } from 'socket.io';
 import jwt, { JwtPayload } from "jsonwebtoken"; 
 
 import prisma from './lib/prisma';
-
+import { enviarNotificacaoPush } from "./lib/pushNotification"; // ✨ NOVO
 
 import usuarioRoutes from './routes/usuarioRoutes';
 import servicoRoutes from './routes/servicoRoutes';
@@ -168,6 +168,24 @@ io.on("connection", (socket) => {
 
       // Emite para os outros na sala (não para quem enviou)
       socket.to(conversaId).emit("nova_mensagem", novaMensagem);
+
+      // ✨ NOVO — dispara push notification para o destinatário
+      const destinatarioId =
+        conversa.clienteId === userId ? conversa.profissionalId : conversa.clienteId;
+
+      const [destinatario, remetente] = await Promise.all([
+        prisma.usuario.findUnique({ where: { id: destinatarioId } }),
+        prisma.usuario.findUnique({ where: { id: userId } }),
+      ]);
+
+      if (destinatario?.fcmToken) {
+        await enviarNotificacaoPush({
+          fcmToken: destinatario.fcmToken,
+          remetenteNome: remetente?.nome ?? "Alguém",
+          textoMensagem: texto,
+          conversaId,
+        });
+      }
 
       // Confirma ao remetente que foi gravado (Acknowledgement)
       callback?.({ status: "ok", mensagem: novaMensagem });
