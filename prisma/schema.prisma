@@ -7,6 +7,30 @@ datasource db {
   provider = "postgresql"
 }
 
+enum PlanoTipo {
+  free
+  premium
+}
+
+enum AssinaturaTipo {
+  mensal
+  anual
+}
+
+enum AssinaturaStatus {
+  pendente
+  ativa
+  cancelada
+  expirada
+}
+
+enum PagamentoStatus {
+  pendente
+  aprovado
+  recusado
+  reembolsado
+}
+
 model Usuario {
   id                 Int                @id @default(autoincrement())
   nome               String
@@ -19,6 +43,7 @@ model Usuario {
   imagem             String? 
   fcmToken           String?  
   disponivel         Boolean            @default(true)
+  plano              PlanoTipo          @default(free)
   criadoEm           DateTime           @default(now())
   avaliacao          Avaliacao[]
   servicos           Servico[]
@@ -30,6 +55,8 @@ model Usuario {
   conversasComoCliente      Conversa[] @relation("ClienteConversas")
   conversasComoProfissional Conversa[] @relation("ProfissionalConversas")
   mensagensEnviadas         Mensagem[]
+  assinaturas               Assinatura[]      
+  pagamentos                Pagamento[]        
 }
 
 model Localizacao {
@@ -61,6 +88,7 @@ model Servico {
   contatosWhatsapp   ContatoWhatsapp[]
   portfolio          Portfolio[]
   favoritos          Favorito[]
+  @@index([usuarioId])
 }
 
 model Categoria {
@@ -174,4 +202,44 @@ model Mensagem {
   criadaEm    DateTime @default(now())
   conversa    Conversa @relation(fields: [conversaId], references: [id])
   remetente   Usuario  @relation(fields: [remetenteId], references: [id])
+}
+
+model Assinatura {
+  id                    Int              @id @default(autoincrement())
+  usuarioId             Int
+  tipo                  AssinaturaTipo
+  status                AssinaturaStatus @default(pendente)
+  mpPreferenceId        String?          // ID da preferência criada no MP
+  mpSubscriptionId      String?          // ID da assinatura recorrente no MP
+  inicioEm              DateTime?
+  expiraEm              DateTime?
+  canceladoEm           DateTime?
+  criadoEm              DateTime         @default(now())
+  atualizadoEm          DateTime         @updatedAt
+  usuario               Usuario          @relation(fields: [usuarioId], references: [id])
+  pagamentos            Pagamento[]
+  @@index([usuarioId, status])
+}
+
+model Pagamento {
+  id             Int             @id @default(autoincrement())
+  usuarioId      Int
+  assinaturaId   Int?
+  mpPaymentId    String?         @unique  // ID do pagamento no Mercado Pago
+  valor          Float
+  status         PagamentoStatus @default(pendente)
+  metodoPagamento String?        // "pix", "credit_card" etc
+  criadoEm       DateTime        @default(now())
+  atualizadoEm   DateTime        @updatedAt
+  usuario        Usuario         @relation(fields: [usuarioId], references: [id])
+  assinatura     Assinatura?     @relation(fields: [assinaturaId], references: [id])
+}
+
+model WebhookEvento {
+  id         Int      @id @default(autoincrement())
+  externalId String   @unique
+  tipo       String
+  status     String
+  payload    Json
+  criadoEm   DateTime @default(now())
 }

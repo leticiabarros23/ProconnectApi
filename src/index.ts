@@ -22,6 +22,10 @@ import segmentoRoutes from "./routes/segmentoRoutes";
 import portfolioRoutes from "./routes/portfolioRoutes";
 import favoritoRoutes from "./routes/favoritoRoutes";
 import chatRoutes from './routes/chatRoutes';
+import assinaturaRoutes from './routes/assinaturaRoutes';
+import pagamentoRoutes from './routes/pagamentoRoutes';
+import webhookRoutes from './routes/webhookRoutes';
+
 
 dotenv.config();
 
@@ -35,7 +39,8 @@ app.use(helmet());
 const allowedOrigins = [
   "https://pro-connect-ten.vercel.app",
   "http://localhost:3000",
-  "http://127.0.0.1:3000"
+  "http://127.0.0.1:3000",
+  "https://preoccupy-freebase-overcook.ngrok-free.dev",
 ];
 
 const corsOptions: cors.CorsOptions = {
@@ -57,6 +62,7 @@ app.options("*", (req, res) => {
   res.sendStatus(200);
 });
 
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -74,6 +80,9 @@ app.use(segmentoRoutes);
 app.use(portfolioRoutes);
 app.use(favoritoRoutes);
 app.use(chatRoutes);
+app.use(assinaturaRoutes);
+app.use(pagamentoRoutes);
+app.use(webhookRoutes);
 
 app.get('/', (req, res) => {
   res.status(200).send('<h1>A API e o Chat estão Online! 🚀</h1>');
