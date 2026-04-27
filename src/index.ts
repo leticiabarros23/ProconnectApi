@@ -26,6 +26,7 @@ import chatRoutes from './routes/chatRoutes';
 import assinaturaRoutes from './routes/assinaturaRoutes';
 import pagamentoRoutes from './routes/pagamentoRoutes';
 import webhookRoutes from './routes/webhookRoutes';
+import dashboardRoutes from './routes/dashboardRoutes';
 
 dotenv.config();
 
@@ -82,6 +83,7 @@ app.use(chatRoutes);
 app.use(assinaturaRoutes);
 app.use(pagamentoRoutes);
 app.use(webhookRoutes);
+app.use(dashboardRoutes);
 
 app.get('/', (req, res) => {
   res.status(200).send('<h1>A API e o Chat estão Online! 🚀</h1>');
