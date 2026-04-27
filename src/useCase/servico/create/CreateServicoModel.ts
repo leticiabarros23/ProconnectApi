@@ -53,7 +53,7 @@ class CreateServicoModel {
     filtroNomeNegocio?: string,
     filtroDisponivel?: boolean
   ) {
-    return prisma.servico.findMany({
+    const servicos = await prisma.servico.findMany({
       where: {
         ...(filtroCidade ? { localizacao: { cidade: { contains: filtroCidade, mode: "insensitive" } } } : {}),
         ...(filtroCategoria ? { categoriaId: filtroCategoria } : {}),
@@ -64,14 +64,26 @@ class CreateServicoModel {
         ...(filtroDisponivel !== undefined ? { usuario: { disponivel: filtroDisponivel } } : {}),
       },
       include: {
-        usuario: { select: usuarioSelect },
+        usuario: {
+          select: {
+            ...usuarioSelect,
+            plano: true // 👈 inclui o plano para ordenação e selo
+          }
+        },
         categoria: true,
         localizacao: true,
         preco: true,
         avaliacao: true,
         portfolio: true,
       },
-    });
+    })
+
+    // Ordena: premium primeiro, free depois
+    return servicos.sort((a, b) => {
+      if (a.usuario?.plano === "premium" && b.usuario?.plano !== "premium") return -1
+      if (a.usuario?.plano !== "premium" && b.usuario?.plano === "premium") return 1
+      return 0
+    })
   }
 
   async findServicoById(id: number) {
@@ -133,51 +145,50 @@ class CreateServicoModel {
     });
   }
 
-async deleteServico(id: number, usuarioId: number) {
-  const servico = await prisma.servico.findUnique({ where: { id } });
+  async deleteServico(id: number, usuarioId: number) {
+    const servico = await prisma.servico.findUnique({ where: { id } });
 
-  if (!servico) {
-    throw new Error("Serviço não encontrado.");
-  }
-  if (servico.usuarioId !== usuarioId) {
-    throw new Error("Este serviço não pertence a você.");
-  }
+    if (!servico) {
+      throw new Error("Serviço não encontrado.");
+    }
+    if (servico.usuarioId !== usuarioId) {
+      throw new Error("Este serviço não pertence a você.");
+    }
 
-  return prisma.$transaction([
-    prisma.servicoRealizado.deleteMany({ where: { servicoId: id } }), 
-    prisma.contatoWhatsapp.deleteMany({ where: { servicoId: id } }), 
-    prisma.favorito.deleteMany({ where: { servicoId: id } }),  
-    prisma.preco.deleteMany({ where: { servicoId: id } }),
-    prisma.avaliacao.deleteMany({ where: { servicoId: id } }),
-    prisma.portfolio.deleteMany({ where: { servicoId: id } }),
-    prisma.servico.delete({ where: { id } }),
-  ]);
-}
+    return prisma.$transaction([
+      prisma.servicoRealizado.deleteMany({ where: { servicoId: id } }),
+      prisma.contatoWhatsapp.deleteMany({ where: { servicoId: id } }),
+      prisma.favorito.deleteMany({ where: { servicoId: id } }),
+      prisma.preco.deleteMany({ where: { servicoId: id } }),
+      prisma.avaliacao.deleteMany({ where: { servicoId: id } }),
+      prisma.portfolio.deleteMany({ where: { servicoId: id } }),
+      prisma.servico.delete({ where: { id } }),
+    ]);
+  }
 
   async uploadImagemServico(id: number, usuarioId: number, imageUrl: string) {
-  const servico = await prisma.servico.findUnique({ where: { id } });
+    const servico = await prisma.servico.findUnique({ where: { id } });
 
-  if (!servico) throw new Error("Serviço não encontrado.");
-  if (servico.usuarioId !== usuarioId) throw new Error("Este serviço não pertence a você.");
+    if (!servico) throw new Error("Serviço não encontrado.");
+    if (servico.usuarioId !== usuarioId) throw new Error("Este serviço não pertence a você.");
 
-  // Se já tinha imagem, deleta do storage antes
-  if (servico.imagem) {
-  const path = decodeURIComponent(servico.imagem.split("/servicos/")[1]);
-  console.log("Path para deletar:", path);
-  const { error } = await supabase.storage.from("servicos").remove([path]);
-  if (error) console.error("Erro ao deletar imagem antiga:", error);
-}
+    if (servico.imagem) {
+      const path = decodeURIComponent(servico.imagem.split("/servicos/")[1]);
+      console.log("Path para deletar:", path);
+      const { error } = await supabase.storage.from("servicos").remove([path]);
+      if (error) console.error("Erro ao deletar imagem antiga:", error);
+    }
 
-  return prisma.servico.update({
-    where: { id },
-    data: { imagem: imageUrl },
-    include: {
-      usuario: { select: usuarioSelect },
-      categoria: true,
-      localizacao: true,
-      preco: true,
-      avaliacao: true,
-      portfolio: true,
+    return prisma.servico.update({
+      where: { id },
+      data: { imagem: imageUrl },
+      include: {
+        usuario: { select: usuarioSelect },
+        categoria: true,
+        localizacao: true,
+        preco: true,
+        avaliacao: true,
+        portfolio: true,
       },
     });
   }
