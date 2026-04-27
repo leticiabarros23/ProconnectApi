@@ -88,6 +88,7 @@ model Servico {
   contatosWhatsapp   ContatoWhatsapp[]
   portfolio          Portfolio[]
   favoritos          Favorito[]
+  visualizacoes      VisualizacaoServico[]
   @@index([usuarioId])
 }
 
@@ -242,4 +243,11 @@ model WebhookEvento {
   status     String
   payload    Json
   criadoEm   DateTime @default(now())
+}
+
+model VisualizacaoServico {
+  id        Int      @id @default(autoincrement())
+  servicoId Int
+  criadoEm  DateTime @default(now())
+  servico   Servico  @relation(fields: [servicoId], references: [id])
 }
