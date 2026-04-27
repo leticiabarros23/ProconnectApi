@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import CreateAvaliacaoModel from "./CreateAvaliacaoModel";
+import prisma from "../../../lib/prisma";
+import { enviarNotificacaoPush } from "../../../lib/pushNotification";
 
 class CreateAvaliacaoController {
-  // Criar avaliação
   async createAvaliacao(req: Request, res: Response) {
     try {
       const { star, descricao, servicoId } = req.body;
@@ -35,16 +36,16 @@ class CreateAvaliacaoController {
       }
 
       const jaAvaliou = await CreateAvaliacaoModel.verificarAvaliacaoExistente(
-      usuarioId,
-      servicoId
+        usuarioId,
+        servicoId
       );
 
       if (jaAvaliou) {
-      return res.status(403).json({
-      error: true,
-      message: "Você já avaliou este serviço.",
-      });
-    }
+        return res.status(403).json({
+          error: true,
+          message: "Você já avaliou este serviço.",
+        });
+      }
 
       const avaliacao = await CreateAvaliacaoModel.createAvaliacaoModel(
         star,
@@ -52,6 +53,32 @@ class CreateAvaliacaoController {
         servicoId,
         usuarioId
       );
+
+      // Notifica o profissional sobre a nova avaliação
+      try {
+        const servico = await prisma.servico.findUnique({
+          where: { id: servicoId },
+          include: {
+            usuario: {
+              select: { fcmToken: true, nome: true }
+            }
+          }
+        })
+
+        const profissional = servico?.usuario
+
+        if (profissional?.fcmToken) {
+          const estrelas = "⭐".repeat(star)
+          await enviarNotificacaoPush({
+            fcmToken: profissional.fcmToken,
+            remetenteNome: "ProConnect",
+            textoMensagem: `Você recebeu uma nova avaliação ${estrelas}`,
+            conversaId: servicoId,
+          })
+        }
+      } catch (notifError) {
+        console.error("Erro ao enviar notificação de avaliação:", notifError)
+      }
 
       return res.status(201).json(avaliacao);
     } catch (error) {
@@ -63,24 +90,23 @@ class CreateAvaliacaoController {
     }
   }
 
-  // Buscar avaliações de um serviço
   async getAvaliacoes(req: Request, res: Response) {
-  try {
-    const { id } = req.params;
-    const avaliacoes = await CreateAvaliacaoModel.getAvaliacoesModel(Number(id));
-    const media = await CreateAvaliacaoModel.getMediaEstrelas(Number(id));
-    const contagem = await CreateAvaliacaoModel.getContagemEstrelas(Number(id));
+    try {
+      const { id } = req.params;
+      const avaliacoes = await CreateAvaliacaoModel.getAvaliacoesModel(Number(id));
+      const media = await CreateAvaliacaoModel.getMediaEstrelas(Number(id));
+      const contagem = await CreateAvaliacaoModel.getContagemEstrelas(Number(id));
 
-    return res.status(200).json({
-      mediaEstrelas: media,
-      contagemEstrelas: contagem,
-      avaliacoes,
-    });
-  } catch (error) {
-    console.error("Erro ao buscar avaliações:", error);
-    return res.status(500).json({
-      error: true,
-      message: "Erro interno ao buscar avaliações.",
+      return res.status(200).json({
+        mediaEstrelas: media,
+        contagemEstrelas: contagem,
+        avaliacoes,
+      });
+    } catch (error) {
+      console.error("Erro ao buscar avaliações:", error);
+      return res.status(500).json({
+        error: true,
+        message: "Erro interno ao buscar avaliações.",
       });
     }
   }
