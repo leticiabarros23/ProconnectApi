@@ -216,31 +216,22 @@ class DashboardModel {
   }
 
   async rankingProfissional(usuarioId: number) {
-    const todosProfissionais = await prisma.servico.groupBy({
-      by: ["usuarioId"],
-      _count: { id: true }
-    })
+    // Uma única query que já calcula a média de todos os profissionais de uma vez
+    const ranking = await prisma.$queryRaw<{ usuarioId: number; media: number }[]>`
+      SELECT s."usuarioId", COALESCE(AVG(a.star), 0) as media
+      FROM "Servico" s
+      LEFT JOIN "Avaliacao" a ON a."servicoId" = s.id
+      GROUP BY s."usuarioId"
+      ORDER BY media DESC
+    `
 
-    const ids = todosProfissionais.map(p => p.usuarioId)
-
-    const medias = await Promise.all(
-      ids.map(async (id) => {
-        const servicoIds = await this.getServicoIds(id)
-        const media = await prisma.avaliacao.aggregate({
-          where: { servicoId: { in: servicoIds } },
-          _avg: { star: true }
-        })
-        return { usuarioId: id, media: media._avg.star ?? 0 }
-      })
-    )
-
-    const ranking = medias.sort((a, b) => b.media - a.media)
+    const total = ranking.length
     const posicao = ranking.findIndex(r => r.usuarioId === usuarioId) + 1
 
     return {
       posicao,
-      total: ranking.length,
-      percentil: Math.round(((ranking.length - posicao) / ranking.length) * 100)
+      total,
+      percentil: Math.round(((total - posicao) / total) * 100)
     }
   }
 
