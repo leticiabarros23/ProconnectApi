@@ -33,26 +33,52 @@ class DashboardController {
       favoritos,
       avaliacoes,
       servicosRealizados,
+      visualizacoes,
+      servicosMaisFavoritados,
+      ranking,
       insights
     ] = await Promise.all([
       DashboardModel.totalCliquesWhatsapp(usuarioId, periodo),
       DashboardModel.totalFavoritos(usuarioId, periodo),
       DashboardModel.metricsAvaliacao(usuarioId, periodo),
       DashboardModel.totalServicosRealizados(usuarioId, periodo),
+      DashboardModel.totalVisualizacoes(usuarioId, periodo),
+      DashboardModel.servicosMaisFavoritados(usuarioId, periodo),
+      DashboardModel.rankingProfissional(usuarioId),
       DashboardModel.gerarInsights(usuarioId),
     ])
 
     return res.status(200).json({
       periodo,
       metricas: {
-        cliquesWhatsapp,
-        favoritos,
+        cliquesWhatsapp: {
+          atual: cliquesWhatsapp.atual,
+          variacao: cliquesWhatsapp.variacao
+        },
+        favoritos: {
+          atual: favoritos.atual,
+          variacao: favoritos.variacao
+        },
         avaliacoes: {
           media: avaliacoes.media,
-          total: avaliacoes.total
+          total: avaliacoes.total,
+          variacao: avaliacoes.variacao
         },
-        servicosRealizados,
+        servicosRealizados: {
+          atual: servicosRealizados.atual,
+          variacao: servicosRealizados.variacao
+        },
+        visualizacoes: {
+          atual: visualizacoes.atual,
+          variacao: visualizacoes.variacao
+        }
       },
+      ranking: {
+        posicao: ranking.posicao,
+        total: ranking.total,
+        percentil: ranking.percentil
+      },
+      servicosMaisFavoritados,
       insights
     })
   }

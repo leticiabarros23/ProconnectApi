@@ -1,5 +1,6 @@
 import express from "express";
 import CreateServicoController from "../useCase/servico/create/CreateServicoController";
+import VisualizacaoController from "../useCase/visualizacao/create/VisualizacaoController";
 import { authenticate } from "../middlewares/authMiddleware";
 import multer from "multer";
 
@@ -30,5 +31,9 @@ servicoRoutes.delete(
   authenticate,
   CreateServicoController.deletarImagem
 );
+
+servicoRoutes.post("/servico/:id/visualizacao", (req, res) => {
+  return VisualizacaoController.handle(req, res)
+});
 
 export default servicoRoutes;
