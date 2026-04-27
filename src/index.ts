@@ -7,7 +7,8 @@ import { Server } from 'socket.io';
 import jwt, { JwtPayload } from "jsonwebtoken"; 
 
 import prisma from './lib/prisma';
-import { enviarNotificacaoPush } from "./lib/pushNotification"; // ✨ NOVO
+import { enviarNotificacaoPush } from "./lib/pushNotification";
+import { iniciarJobLembrete } from './jobs/lembreteAssinatura'; // 👈 NOVO
 
 import usuarioRoutes from './routes/usuarioRoutes';
 import servicoRoutes from './routes/servicoRoutes';
@@ -25,7 +26,6 @@ import chatRoutes from './routes/chatRoutes';
 import assinaturaRoutes from './routes/assinaturaRoutes';
 import pagamentoRoutes from './routes/pagamentoRoutes';
 import webhookRoutes from './routes/webhookRoutes';
-
 
 dotenv.config();
 
@@ -61,7 +61,6 @@ app.use(cors(corsOptions));
 app.options("*", (req, res) => {
   res.sendStatus(200);
 });
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -100,7 +99,6 @@ const io = new Server(server, {
   }
 });
 
-// Middleware de autenticação — roda antes de qualquer conexão ser aceite
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
 
@@ -119,7 +117,6 @@ io.use((socket, next) => {
       throw new Error();
     }
 
-    // Guarda o utilizador na sessão do socket — igual ao req.user do Express
     socket.data.user = { id: decoded.sub, email: decoded.email };
     next();
   } catch {
@@ -127,12 +124,10 @@ io.use((socket, next) => {
   }
 });
 
-// Lógica do chat em tempo real
 io.on("connection", (socket) => {
-  const userId: number = socket.data.user.id; // Sempre do JWT, nunca do frontend
+  const userId: number = socket.data.user.id;
   console.log(`🔌 Utilizador autenticado conectado: ${userId}`);
 
-  // Entrar numa conversa com validação de pertencimento
   socket.on("entrar_conversa", async (conversaId: string) => {
     const conversa = await prisma.conversa.findFirst({
       where: {
@@ -149,12 +144,10 @@ io.on("connection", (socket) => {
     console.log(`✅ Utilizador ${userId} entrou na conversa ${conversaId}`);
   });
 
-  // Enviar mensagem — remetenteId vem do JWT, nunca do frontend
   socket.on("enviar_mensagem", async (dados, callback) => {
-    const { conversaId, texto } = dados; // remetenteId ignorado intencionalmente
+    const { conversaId, texto } = dados;
 
     try {
-      // Verifica pertencimento antes de gravar
       const conversa = await prisma.conversa.findFirst({
         where: {
           id: conversaId,
@@ -166,19 +159,16 @@ io.on("connection", (socket) => {
         return callback?.({ status: "error", error: "Acesso negado." });
       }
 
-      // Grava na BD primeiro, emite depois
       const novaMensagem = await prisma.mensagem.create({
         data: {
           texto,
-          remetenteId: userId, // Do JWT — nunca do frontend
+          remetenteId: userId,
           conversaId,
         },
       });
 
-      // Emite para os outros na sala (não para quem enviou)
       socket.to(conversaId).emit("nova_mensagem", novaMensagem);
 
-      // ✨ NOVO — dispara push notification para o destinatário
       const destinatarioId =
         conversa.clienteId === userId ? conversa.profissionalId : conversa.clienteId;
 
@@ -196,7 +186,6 @@ io.on("connection", (socket) => {
         });
       }
 
-      // Confirma ao remetente que foi gravado (Acknowledgement)
       callback?.({ status: "ok", mensagem: novaMensagem });
 
     } catch (error) {
@@ -225,6 +214,9 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
 // ============================================================
 // INICIAR SERVIDOR
 // ============================================================
+
+// 👈 NOVO — inicia o job de lembrete de assinatura
+iniciarJobLembrete();
 
 server.listen(port, () => {
   console.log(`🚀 Servidor HTTP e WebSockets online na porta http://localhost:${port}`);
