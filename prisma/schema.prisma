@@ -250,4 +250,5 @@ model VisualizacaoServico {
   servicoId Int
   criadoEm  DateTime @default(now())
   servico   Servico  @relation(fields: [servicoId], references: [id])
+  @@index([servicoId])
 }
