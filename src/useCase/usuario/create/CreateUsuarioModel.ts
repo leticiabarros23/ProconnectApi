@@ -11,6 +11,7 @@ const usuarioSelect = {
   endereco: true,
   imagem: true,
   disponivel: true,
+  plano: true,
   criadoEm: true,
 };
 
