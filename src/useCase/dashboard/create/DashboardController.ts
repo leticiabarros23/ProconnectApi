@@ -34,6 +34,11 @@ class DashboardController {
       avaliacoes,
       servicosRealizados,
       visualizacoes,
+      clientesUnicos,
+      taxaConversao,
+      horarioDePico,
+      avaliacaoGeral,
+      servicosMaisVisualizados,
       servicosMaisFavoritados,
       ranking,
       insights
@@ -43,6 +48,11 @@ class DashboardController {
       DashboardModel.metricsAvaliacao(usuarioId, periodo),
       DashboardModel.totalServicosRealizados(usuarioId, periodo),
       DashboardModel.totalVisualizacoes(usuarioId, periodo),
+      DashboardModel.totalClientesUnicos(usuarioId, periodo),
+      DashboardModel.taxaConversao(usuarioId, periodo),
+      DashboardModel.horarioDePico(usuarioId, periodo),
+      DashboardModel.avaliacaoGeralHistorica(usuarioId),
+      DashboardModel.servicosMaisVisualizados(usuarioId, periodo),
       DashboardModel.servicosMaisFavoritados(usuarioId, periodo),
       DashboardModel.rankingProfissional(usuarioId),
       DashboardModel.gerarInsights(usuarioId),
@@ -66,11 +76,31 @@ class DashboardController {
         },
         servicosRealizados: {
           atual: servicosRealizados.atual,
+          agendados: servicosRealizados.agendados,
+          concluidos: servicosRealizados.concluidos,
           variacao: servicosRealizados.variacao
         },
         visualizacoes: {
           atual: visualizacoes.atual,
           variacao: visualizacoes.variacao
+        },
+        clientesUnicos: {
+          atual: clientesUnicos.atual,
+          variacao: clientesUnicos.variacao
+        },
+        taxaConversao: {
+          cliques: taxaConversao.cliques,
+          realizados: taxaConversao.realizados,
+          taxa: taxaConversao.taxa
+        },
+        horarioDePico: {
+          hora: horarioDePico.hora,
+          total: horarioDePico.total,
+          distribuicao: horarioDePico.distribuicao
+        },
+        avaliacaoGeral: {
+          media: avaliacaoGeral.media,
+          total: avaliacaoGeral.total
         }
       },
       ranking: {
@@ -78,6 +108,7 @@ class DashboardController {
         total: ranking.total,
         percentil: ranking.percentil
       },
+      servicosMaisVisualizados,
       servicosMaisFavoritados,
       insights
     })

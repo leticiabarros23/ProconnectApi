@@ -158,16 +158,20 @@ class DashboardModel {
     const anterior = this.getPeriodoAnterior(periodo)
     const servicoIds = await this.getServicoIds(usuarioId)
 
-    const [atual, anteriores] = await Promise.all([
+    const [agendados, concluidos, anteriores] = await Promise.all([
       prisma.servicoRealizado.count({
-        where: { servicoId: { in: servicoIds }, realizadoEm: { gte: desde } }
+        where: { servicoId: { in: servicoIds }, confirmado: null, realizadoEm: { gte: desde } }
+      }),
+      prisma.servicoRealizado.count({
+        where: { servicoId: { in: servicoIds }, confirmado: true, realizadoEm: { gte: desde } }
       }),
       prisma.servicoRealizado.count({
         where: { servicoId: { in: servicoIds }, realizadoEm: { gte: anterior.inicio, lt: anterior.fim } }
       })
     ])
 
-    return { atual, variacao: this.calcularVariacao(atual, anteriores) }
+    const atual = agendados + concluidos
+    return { atual, agendados, concluidos, variacao: this.calcularVariacao(atual, anteriores) }
   }
 
   async totalVisualizacoes(usuarioId: number, periodo: string) {
@@ -185,6 +189,137 @@ class DashboardModel {
     ])
 
     return { atual, variacao: this.calcularVariacao(atual, anteriores) }
+  }
+
+  async totalClientesUnicos(usuarioId: number, periodo: string) {
+    const desde = this.getPeriodo(periodo)
+    const anterior = this.getPeriodoAnterior(periodo)
+    const servicoIds = await this.getServicoIds(usuarioId)
+
+    const [whatsappAtual, whatsappAnterior, chatAtual, chatAnterior] = await Promise.all([
+      prisma.contatoWhatsapp.findMany({
+        where: { servicoId: { in: servicoIds }, clicadoEm: { gte: desde } },
+        select: { usuarioId: true },
+        distinct: ["usuarioId"]
+      }),
+      prisma.contatoWhatsapp.findMany({
+        where: { servicoId: { in: servicoIds }, clicadoEm: { gte: anterior.inicio, lt: anterior.fim } },
+        select: { usuarioId: true },
+        distinct: ["usuarioId"]
+      }),
+      prisma.conversa.findMany({
+        where: { profissionalId: usuarioId, criadaEm: { gte: desde } },
+        select: { clienteId: true },
+        distinct: ["clienteId"]
+      }),
+      prisma.conversa.findMany({
+        where: { profissionalId: usuarioId, criadaEm: { gte: anterior.inicio, lt: anterior.fim } },
+        select: { clienteId: true },
+        distinct: ["clienteId"]
+      })
+    ])
+
+    const idsAtual = new Set([
+      ...whatsappAtual.map(w => w.usuarioId),
+      ...chatAtual.map(c => c.clienteId)
+    ])
+    const idsAnterior = new Set([
+      ...whatsappAnterior.map(w => w.usuarioId),
+      ...chatAnterior.map(c => c.clienteId)
+    ])
+
+    return {
+      atual: idsAtual.size,
+      variacao: this.calcularVariacao(idsAtual.size, idsAnterior.size)
+    }
+  }
+
+  async taxaConversao(usuarioId: number, periodo: string) {
+    const desde = this.getPeriodo(periodo)
+    const servicoIds = await this.getServicoIds(usuarioId)
+
+    const [cliques, realizados] = await Promise.all([
+      prisma.contatoWhatsapp.count({
+        where: { servicoId: { in: servicoIds }, clicadoEm: { gte: desde } }
+      }),
+      prisma.servicoRealizado.count({
+        where: { servicoId: { in: servicoIds }, confirmado: true, realizadoEm: { gte: desde } }
+      })
+    ])
+
+    const taxa = cliques === 0 ? 0 : Math.round((realizados / cliques) * 100)
+    return { cliques, realizados, taxa }
+  }
+
+  async horarioDePico(usuarioId: number, periodo: string) {
+    const desde = this.getPeriodo(periodo)
+    const servicoIds = await this.getServicoIds(usuarioId)
+
+    const contatos = await prisma.contatoWhatsapp.findMany({
+      where: { servicoId: { in: servicoIds }, clicadoEm: { gte: desde } },
+      select: { clicadoEm: true }
+    })
+
+    if (contatos.length === 0) return { hora: null, total: 0, distribuicao: {} }
+
+    const contagemPorHora: Record<number, number> = {}
+    for (const contato of contatos) {
+      const hora = contato.clicadoEm.getHours()
+      contagemPorHora[hora] = (contagemPorHora[hora] ?? 0) + 1
+    }
+
+    const horaPico = Object.entries(contagemPorHora).reduce((a, b) =>
+      b[1] > a[1] ? b : a
+    )
+
+    return {
+      hora: parseInt(horaPico[0]),
+      total: horaPico[1],
+      distribuicao: contagemPorHora
+    }
+  }
+
+  async avaliacaoGeralHistorica(usuarioId: number) {
+    const servicoIds = await this.getServicoIds(usuarioId)
+
+    const media = await prisma.avaliacao.aggregate({
+      where: { servicoId: { in: servicoIds } },
+      _avg: { star: true },
+      _count: { star: true }
+    })
+
+    return {
+      media: Math.round((media._avg.star ?? 0) * 10) / 10,
+      total: media._count.star
+    }
+  }
+
+  async servicosMaisVisualizados(usuarioId: number, periodo: string) {
+    const desde = this.getPeriodo(periodo)
+    const servicoIds = await this.getServicoIds(usuarioId)
+
+    const visualizacoes = await prisma.visualizacaoServico.groupBy({
+      by: ["servicoId"],
+      where: { servicoId: { in: servicoIds }, criadoEm: { gte: desde } },
+      _count: { servicoId: true },
+      orderBy: { _count: { servicoId: "desc" } },
+      take: 5
+    })
+
+    const servicosDetalhes = await prisma.servico.findMany({
+      where: { id: { in: visualizacoes.map(v => v.servicoId) } },
+      select: { id: true, nomeNegocio: true, imagem: true }
+    })
+
+    return visualizacoes.map(v => {
+      const servico = servicosDetalhes.find(s => s.id === v.servicoId)
+      return {
+        servicoId: v.servicoId,
+        nomeNegocio: servico?.nomeNegocio ?? "",
+        imagem: servico?.imagem ?? null,
+        totalVisualizacoes: v._count.servicoId
+      }
+    })
   }
 
   async servicosMaisFavoritados(usuarioId: number, periodo: string) {
@@ -216,7 +351,6 @@ class DashboardModel {
   }
 
   async rankingProfissional(usuarioId: number) {
-    // Uma única query que já calcula a média de todos os profissionais de uma vez
     const ranking = await prisma.$queryRaw<{ usuarioId: number; media: number }[]>`
       SELECT s."usuarioId", COALESCE(AVG(a.star), 0) as media
       FROM "Servico" s
