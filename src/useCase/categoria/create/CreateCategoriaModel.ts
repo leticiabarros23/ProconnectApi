@@ -1,10 +1,13 @@
-import  prisma  from "../../../lib/prisma";
+import prisma from "../../../lib/prisma";
 
 class CreateCategoriaModel {
-  async createCategoriaModel(nomeServico: string) {
+  async createCategoriaModel(nomeServico: string, segmentoId?: number) {
     try {
       return await prisma.categoria.create({
-        data: { nomeServico },
+        data: { 
+          nomeServico,
+          ...(segmentoId !== undefined && { segmentoId })
+        },
       });
     } catch (error) {
       console.error("Erro no Model ao criar categoria:", error);
@@ -30,11 +33,14 @@ class CreateCategoriaModel {
     }
   }
 
-  async updateCategoriaModel(id: number, nomeServico: string) {
+  async updateCategoriaModel(id: number, nomeServico?: string, segmentoId?: number) {
     try {
       return await prisma.categoria.update({
         where: { id },
-        data: { nomeServico },
+        data: {
+          ...(nomeServico !== undefined && { nomeServico }),
+          ...(segmentoId !== undefined && { segmentoId }),
+        },
       });
     } catch (error) {
       console.error("Erro ao atualizar categoria:", error);

@@ -3,10 +3,13 @@ import CreateCategoriaModel from "./CreateCategoriaModel";
 
 class CreateCategoriaController {
   async createCategoria(req: Request, res: Response) {
-    const { nomeServico } = req.body;
+    const { nomeServico, segmentoId } = req.body;
 
     try {
-      const categoria = await CreateCategoriaModel.createCategoriaModel(nomeServico);
+      const categoria = await CreateCategoriaModel.createCategoriaModel(
+        nomeServico,
+        segmentoId ? Number(segmentoId) : undefined
+      );
       return res.status(201).json(categoria);
     } catch (error) {
       console.error("Erro ao criar categoria:", error);
@@ -20,7 +23,6 @@ class CreateCategoriaController {
   async getAllCategoria(req: Request, res: Response) {
     try {
       const categorias = await CreateCategoriaModel.getAllCategoriaModel();
-      // ✅ Sempre devolve 200 com array (mesmo se vazio)
       return res.status(200).json(categorias);
     } catch (error) {
       console.error("Erro ao buscar todas as categorias:", error);
@@ -53,12 +55,13 @@ class CreateCategoriaController {
 
   async updateCategoria(req: Request, res: Response) {
     const { id } = req.params;
-    const { nomeServico } = req.body;
+    const { nomeServico, segmentoId } = req.body;
 
     try {
       const categoriaAtualizada = await CreateCategoriaModel.updateCategoriaModel(
         Number(id),
-        nomeServico
+        nomeServico,
+        segmentoId !== undefined ? Number(segmentoId) : undefined
       );
 
       if (!categoriaAtualizada) {
