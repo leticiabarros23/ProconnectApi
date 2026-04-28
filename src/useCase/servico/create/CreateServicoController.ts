@@ -103,14 +103,20 @@ class CreateServicoController {
     }
   }
 
-  static async getServicoById(req: Request, res: Response) {
-    const n = Number(req.params.id);
-    if (!n || Number.isNaN(n)) return res.status(400).json({ message: "ID inválido." });
+ static async getServicoById(req: Request, res: Response) {
+  const n = Number(req.params.id);
+  if (!n || Number.isNaN(n)) return res.status(400).json({ message: "ID inválido." });
 
-    const servico = await CreateServicoModel.findServicoById(n);
-    if (!servico) return res.status(404).json({ message: "Serviço não encontrado." });
-    return res.json(servico);
-  }
+  const servico = await CreateServicoModel.findServicoById(n);
+  if (!servico) return res.status(404).json({ message: "Serviço não encontrado." });
+
+  // Registra visualização de forma silenciosa — não bloqueia a resposta
+  prisma.visualizacaoServico.create({
+    data: { servicoId: n }
+  }).catch(() => {}) // ignora erro para não afetar a resposta
+
+  return res.json(servico);
+}
 
   static async updateServico(req: Request, res: Response) {
     const { id } = req.params;
