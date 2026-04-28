@@ -29,7 +29,8 @@ class CreateAssinaturaController {
       return res.status(409).json({ error: "Você já possui uma assinatura ativa." })
     }
 
-    const valor = tipo === "anual" ? 269.90 : 29.90
+    // const valor = tipo === "anual" ? 269.90 : 29.90
+       const valor = tipo === "anual" ? 2.00 : 1.00
 
     const preference = new Preference(client)
     const response = await preference.create({
